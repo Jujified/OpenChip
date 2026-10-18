@@ -1,0 +1,37 @@
+# Chamber mixer, printed monolithic — the case where drainage matters.
+#
+# Two streams meet, drop into a 4 mm spherical chamber that stalls and folds
+# them, then run a short serpentine to the outlet. Printed as one solid block
+# rather than a two-piece chip, so nothing is open until the resin is flushed:
+# every enclosed cavity needs a path out, and the node furthest from any port
+# is where a vent does the most good.
+#
+# `examples/chamber-mixer.openchip` is this exact file compiled — read the two
+# side by side to see what each DSL line becomes in raw graph form.
+
+chip "Chamber mixer"
+printer high-res-8k
+size 40 x 60
+base 6
+wall 2
+edge-spacing 3
+split monolithic
+channel 0.8 x 0.5 rect
+
+port inletA at 12,52 luer-slip inlet water 15
+port inletB at 28,52 luer-slip inlet pbs 15
+port outlet at 20,8  luer-slip outlet
+
+node junction at 20,46
+chamber pot at 20,40 sphere 4
+
+path inletA -> junction
+path inletB -> junction
+path junction -> pot
+
+node mid at 20,32
+path pot -> mid -> (20,24) -> (20,16) -> outlet
+
+# `mid` is 24 mm of channel from the nearest port — the local maximum, and so
+# the one place resin has furthest to travel to escape.
+vent mid 0.8

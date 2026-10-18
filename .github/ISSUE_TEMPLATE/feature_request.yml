@@ -1,0 +1,16 @@
+name: Feature request
+description: Suggest something OpenChip should do.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: Describe the chip or experiment, and where OpenChip gets in the way.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help?
+      description: Your idea for how it could work. Rough is fine.

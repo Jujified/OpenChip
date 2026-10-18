@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://wiki.openchip.tech
+    about: How to use OpenChip, what every design check means, and how to print a chip.
+  - name: Security problem
+    url: https://github.com/Jujified/OpenChip/blob/main/SECURITY.md
+    about: Please report security issues by email rather than in a public issue.

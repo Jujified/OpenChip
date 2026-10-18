@@ -1,0 +1,96 @@
+# Biomimetic silk-spinning duct — a composition, not a named geometry.
+#
+# This is the example for a request that matches none of the recipes: someone
+# describes a natural system, and the chip is the sequence of operations that
+# system performs on the fluid, laid end to end.
+#
+# --- the verbs, and what each becomes ---------------------------------------
+#
+#   store protein at high concentration   →  `ampulla`, a 4 mm cylinder chamber
+#   merge with an exchange buffer         →  Y-junction with curved `via` arms
+#   hold them together for a long time    →  a folded run, 4 reversals
+#   narrow steadily throughout            →  ONE taper across the whole chain
+#   deliver                               →  outlet
+#
+# Note how the taper is written: markers at the two ENDS of the run and nothing
+# in between. Dimension markers loft along a whole chain, so the bare segments
+# between them interpolate smoothly. Putting a `taper` on every segment would
+# turn the same taper into a staircase of constant-width steps.
+#
+# The taper cannot cross the merge — a junction of three edges ends a chain —
+# so the run is marked from `spin0`, just downstream of the Y, to the outlet.
+#
+# --- what this chip is NOT --------------------------------------------------
+#
+# Say all of this to anyone you hand it to:
+#
+#   * The buffer runs ALONGSIDE the protein, not around it. A Y-merge puts two
+#     streams side by side in one rectangular channel; it does not sheathe one
+#     in the other the way a natural duct does. Exchange happens by diffusion
+#     across a flat interface, which is slower and less uniform.
+#   * Nothing here lowers pH or swaps ions by itself. The chip provides contact,
+#     time and shear. Whether the protein assembles is chemistry, and it depends
+#     on the buffer you actually pump.
+#   * No fibre forms inside the chip if all goes well — a solid forming in a
+#     0.4 mm channel is a blockage. Expect assembly at or after the outlet, into
+#     a coagulation bath.
+#   * The narrowing is in the channel width and height only. There is no
+#     hyperbolic draw-down, and the elongational strain rate is nothing like a
+#     real spinneret's.
+#   * OpenChip's fluid estimates are Newtonian. Spidroin dope is strongly
+#     shear-thinning, so every pressure figure here is an over-estimate at the
+#     narrow end — which is exactly where it matters most.
+#
+# Expected report: 0 risk · 0 caution · 2 info — the luer-lock thread note, and
+# the taper itself, reported because it is a 2.5x change (see below).
+# The lock fitting is deliberate: the dope is thousands of times more viscous
+# than water and the protein line carries real backpressure, so a slip fit is
+# the wrong choice however much tidier its report would look.
+
+chip "Biomimetic silk-spinning duct"
+printer standard-4k
+size 55 x 88
+base 4
+wall 2
+edge-spacing 3
+split two-piece at 2
+channel 0.8 x 0.5 rect
+
+fluid silk-dope name "Recombinant spidroin dope" density 1050 viscosity 5 k 0.5 cp 3500 temp 20
+fluid exchange-buffer name "Acidic exchange buffer" density 1010 viscosity 0.0015 k 0.59 cp 4100 temp 20
+
+port proteinIn at 16,79 luer-lock  inlet silk-dope 5
+port bufferIn  at 39,79 luer-slip  inlet exchange-buffer 20
+port outlet    at 27,7  luer-slip  outlet
+
+# Storage: the dope collects here before it enters the duct.
+chamber ampulla at 16,70 cylinder 4
+path proteinIn -> ampulla
+
+# The merge. Curved arms so the two streams arrive parallel and lie down side
+# by side rather than colliding — co-flow is the gentlest contact available,
+# and a protein solution is exactly what a head-on collision damages.
+node merge at 27,62
+path ampulla  -> merge via (16,66) (27,65)
+path bufferIn -> merge via (39,66) (27,65)
+
+# The duct: one continuous chain from the merge to the outlet, folding four
+# times and narrowing the whole way. 1.0 x 0.6 mm at the top, 0.4 x 0.3 mm at
+# the spigot — a 2.5x reduction spread over 210 mm. That does cross the 2x
+# taper threshold, so the checker reports it, but at `info` rather than
+# `caution` because of how far it is spread: the check weighs the ratio against
+# the distance it happens over, and 2.5x across 210 mm is a 0-degree taper.
+# Keep it as the report reads; it is the device.
+node spin0 at 27,57
+path merge -> spin0
+
+path spin0 -> (8,57) taper 1.0x0.6@0 1.0x0.6@1
+  -> (8,50) -> (47,50)
+  -> (47,43) -> (8,43)
+  -> (8,36) -> (47,36)
+  -> (47,29) -> (8,29)
+  -> (8,22) -> spinEnd(27,22)
+# `spinEnd` is NAMED, not written as (27,22) a second time: repeating the
+# coordinates would lay down a second node on the same spot with no channel
+# between them, and the duct would quietly end here.
+path spinEnd -> outlet taper 0.4x0.3@0 0.4x0.3@1

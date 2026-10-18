@@ -1,0 +1,40 @@
+# Glass-slide mixer — a T-junction under optical glass.
+#
+# The chip prints open-faced: the channels are grooves with no roof, and a
+# plain 75 × 25 mm microscope slide drops into a pocket and becomes the roof
+# once it is bonded on. Use this whenever you need to see into the channel.
+#
+# Two things drive the whole layout, and both are the slide's doing:
+#
+#   1. The chip has to be big enough for the slide, not the other way round.
+#      A 75 × 25 mm slide makes a 75.4 × 25.4 mm pocket, and every port needs
+#      to sit outside that pocket while staying clear of the chip edge — which
+#      is why this chip is 96 × 32 mm rather than the usual 40 × 60.
+#   2. Nothing round. A round section is centred on the open face, so the
+#      pocket cuts its top half off and the flat glass closes a semicircle
+#      holding half the fluid the estimates assume.
+#
+# Expected report: 3 cautions, all `channel-outside-slide`, all on the lead-ins
+# from the rim ports. That is not a defect — it is how a channel reaches a port
+# on the rim. Those stretches keep their printed roof, so check they can drain.
+
+chip "Glass-slide mixer"
+printer standard-4k
+size 96 x 32
+base 5
+wall 2
+edge-spacing 3
+split glass-slide
+slide 75x25 thick 1 clearance 0.2
+channel 0.8 x 0.5 rect
+
+# Ports live on the rim, outside the pocket: x + 2.135 mm of luer boss must
+# clear the pocket wall at x = 10.3, and x - 2.135 must clear the 3 mm margin.
+port inA at 6,22  luer-slip inlet water 10
+port inB at 6,10  luer-slip inlet pbs 10
+port out at 90,16 luer-slip outlet
+
+node tee at 20,16
+path inA -> (14,22) -> tee
+path inB -> (14,10) -> tee
+path tee -> (40,16) -> (60,16) -> (80,16) -> out

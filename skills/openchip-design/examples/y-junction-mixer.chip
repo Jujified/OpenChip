@@ -1,0 +1,27 @@
+# Y-junction mixer — curved arms, so two streams lie down side by side.
+#
+# Both inlet arms curve so they arrive at the junction running parallel. The
+# streams merge as co-flowing laminae rather than colliding head-on, which is
+# what you want for cells, emulsions, or anything a collision would damage.
+# It is also the slowest-mixing merge, because nothing stretches the interface.
+#
+# Demonstrates `via`: two cubic control points turn a segment into a bezier.
+
+chip "Y-junction mixer"
+printer standard-4k
+size 36 x 44
+base 4
+wall 2
+edge-spacing 3
+split two-piece at 2
+channel 0.8 x 0.5 rect
+
+port inletA at 9,37  luer-slip inlet water 10
+port inletB at 27,37 luer-slip inlet water 10
+port outlet at 18,6  luer-slip outlet
+
+node junction at 18,28
+
+path inletA -> junction via (9,33) (18,32)
+path inletB -> junction via (27,33) (18,32)
+path junction -> (18,21) -> (18,14) -> outlet

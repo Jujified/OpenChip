@@ -1,0 +1,27 @@
+name: A number looks wrong
+description: A flow estimate, design-check threshold, fluid property or dimension disagrees with what you measured or expected.
+labels: [accuracy]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A measured contradiction is the most valuable thing anyone can send this project. Include how you measured, so it can be checked and fixed.
+  - type: textarea
+    id: number
+    attributes:
+      label: Which number?
+      description: Where it appears in the app, and the value OpenChip showed.
+    validations:
+      required: true
+  - type: textarea
+    id: measured
+    attributes:
+      label: What you measured or expected, and how
+      description: Your value, the method or instrument, and any source (paper, datasheet, standard).
+    validations:
+      required: true
+  - type: textarea
+    id: file
+    attributes:
+      label: Project file
+      description: Drag your `.openchip` file here so the exact design can be checked.

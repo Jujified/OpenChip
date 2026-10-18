@@ -1,0 +1,35 @@
+# Serpentine mixer — the workhorse two-stream diffusive mixer.
+#
+# Two inlets meet at a junction; the combined stream is folded back and forth
+# across the chip six times so the two laminae have time to interdiffuse.
+# Length is the only lever a purely diffusive mixer has.
+
+chip "Serpentine mixer"
+printer standard-4k
+size 40 x 60
+base 4
+wall 2
+edge-spacing 3
+split two-piece at 2
+channel 0.8 x 0.5 rect
+
+port inletA at 13,54 luer-slip inlet water 10
+port inletB at 27,54 luer-slip inlet water 10
+port outlet at 20,7  luer-slip outlet
+
+node junction at 20,47
+node lead     at 20,43
+
+path inletA -> junction
+path inletB -> junction
+path junction -> lead
+
+# Six passes at 6 mm row pitch: 5.2 mm of wall between neighbouring runs,
+# comfortably above the 2 mm rule.
+path lead -> (7,43)
+  -> (7,37)  -> (33,37)
+  -> (33,31) -> (7,31)
+  -> (7,25)  -> (33,25)
+  -> (33,19) -> (7,19)
+  -> (7,13)  -> (33,13)
+  -> (33,7)  -> outlet

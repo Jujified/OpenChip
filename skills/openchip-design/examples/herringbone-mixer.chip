@@ -1,0 +1,55 @@
+# Planar herringbone (chevron-fold) mixer.
+#
+# Nine chevron legs in three staggered groups. Each group biases the run to one
+# side and the bias REVERSES between groups — the planar equivalent of the
+# alternating half-cycles in a staggered herringbone mixer. Repeatedly
+# reorienting the flow stretches and folds the interface, so the diffusion
+# distance shrinks geometrically rather than linearly. Mixes in far less length
+# than a plain serpentine, at the cost of sharper corners and more pressure.
+#
+# CAVEAT, and say this to the user: the published staggered herringbone mixer
+# works by ridges cut into the channel FLOOR — sub-channel features a planar
+# graph at a single Z cannot express. This folds the interface by turning the
+# whole channel instead of driving a helical secondary flow. Expect useful
+# mixing, not the original device's numbers.
+#
+# --- the coordinate scheme, so you can re-cut it to any chip -----------------
+#
+#   centre    cx        = 15        (chip width / 2)
+#   amplitude a         = 3.5       (half the side-to-side swing)
+#   bias      b(group)  = -1.5, +1.5, -1.5   (reverses every group)
+#   legs      3 per group, rise 5 mm each, so 15 mm per group
+#
+#   leg k of a group (k = 1, 2, 3), starting downward from that group's top y:
+#       sign = -1 for odd k, +1 for even k
+#       x    = cx + b + sign * a
+#       y    = groupTopY - 5 * k
+#
+# Which gives x ∈ {10, 13, 17, 20} and the nine legs below. Widen the swing by
+# raising `a`; fold harder by adding groups, not by adding legs to a group.
+
+chip "Herringbone mixer"
+printer standard-4k
+size 30 x 76
+base 4
+wall 2
+edge-spacing 3
+split two-piece at 2
+channel 0.8 x 0.5 rect
+
+port inletA at 10,70 luer-slip inlet water 10
+port inletB at 20,70 luer-slip inlet water 10
+port outlet at 15,8  luer-slip outlet
+
+node junction at 15,65
+path inletA -> junction
+path inletB -> junction
+
+# Group 1 — bias -1.5, so the run leans left
+path junction -> (10,60) -> (17,55) -> (10,50)
+# Group 2 — bias +1.5, the fold reverses
+  -> (13,45) -> (20,40) -> (13,35)
+# Group 3 — bias -1.5, and reverses back
+  -> (10,30) -> (17,25) -> (10,20)
+# Gather onto the axis before the outlet
+  -> (15,14) -> outlet

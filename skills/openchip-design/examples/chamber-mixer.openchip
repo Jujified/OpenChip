@@ -1,0 +1,282 @@
+{
+  "formatVersion": 1,
+  "meta": {
+    "name": "Chamber mixer",
+    "createdAt": "2026-09-09T16:05:19.078Z",
+    "modifiedAt": "2026-09-09T16:05:19.078Z",
+    "units": "mm"
+  },
+  "printerProfile": {
+    "name": "High-resolution 8K / 12K",
+    "xyResolutionMicrons": 20,
+    "layerHeightMicrons": 30,
+    "minFeatureSizeMm": 0.12,
+    "buildVolumeMm": {
+      "x": 219,
+      "y": 123,
+      "z": 260
+    }
+  },
+  "chipParams": {
+    "width": 40,
+    "length": 60,
+    "baseThickness": 6,
+    "wallThickness": 2,
+    "minEdgeSpacing": 3,
+    "splitType": "monolithic",
+    "splitHeight": 2,
+    "slide": {
+      "widthMm": 75,
+      "lengthMm": 25,
+      "thicknessMm": 1,
+      "clearanceMm": 0.2,
+      "bondGapMm": 0,
+      "offsetXMm": 0,
+      "offsetYMm": 0
+    },
+    "defaultChannelWidthMm": 0.8,
+    "defaultChannelHeightMm": 0.5,
+    "defaultCrossSection": "rect"
+  },
+  "channelGraph": {
+    "nodes": [
+      {
+        "id": "inletA",
+        "x": 12,
+        "y": 52,
+        "type": "port",
+        "portType": "luer",
+        "diameterMm": 1.6,
+        "customSpec": {
+          "taperLargeDiameterMm": 4.27,
+          "taperSmallDiameterMm": 3.858,
+          "taperLengthMm": 7.5,
+          "bossHeightMm": 3.5
+        }
+      },
+      {
+        "id": "inletB",
+        "x": 28,
+        "y": 52,
+        "type": "port",
+        "portType": "luer",
+        "diameterMm": 1.6,
+        "customSpec": {
+          "taperLargeDiameterMm": 4.27,
+          "taperSmallDiameterMm": 3.858,
+          "taperLengthMm": 7.5,
+          "bossHeightMm": 3.5
+        }
+      },
+      {
+        "id": "outlet",
+        "x": 20,
+        "y": 8,
+        "type": "port",
+        "portType": "luer",
+        "diameterMm": 1.6,
+        "customSpec": {
+          "taperLargeDiameterMm": 4.27,
+          "taperSmallDiameterMm": 3.858,
+          "taperLengthMm": 7.5,
+          "bossHeightMm": 3.5
+        }
+      },
+      {
+        "id": "junction",
+        "x": 20,
+        "y": 46,
+        "type": "waypoint"
+      },
+      {
+        "id": "pot",
+        "x": 20,
+        "y": 40,
+        "type": "chamber",
+        "shape": "sphere",
+        "sizeMm": 4,
+        "autoPlaced": false
+      },
+      {
+        "id": "mid",
+        "x": 20,
+        "y": 32,
+        "type": "waypoint"
+      },
+      {
+        "id": "w1",
+        "x": 20,
+        "y": 24,
+        "type": "waypoint"
+      },
+      {
+        "id": "w2",
+        "x": 20,
+        "y": 16,
+        "type": "waypoint"
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "fromNodeId": "inletA",
+        "toNodeId": "junction",
+        "curveType": "straight",
+        "crossSection": "rect",
+        "dimensionPoints": []
+      },
+      {
+        "id": "e2",
+        "fromNodeId": "inletB",
+        "toNodeId": "junction",
+        "curveType": "straight",
+        "crossSection": "rect",
+        "dimensionPoints": []
+      },
+      {
+        "id": "e3",
+        "fromNodeId": "junction",
+        "toNodeId": "pot",
+        "curveType": "straight",
+        "crossSection": "rect",
+        "dimensionPoints": []
+      },
+      {
+        "id": "e4",
+        "fromNodeId": "pot",
+        "toNodeId": "mid",
+        "curveType": "straight",
+        "crossSection": "rect",
+        "dimensionPoints": []
+      },
+      {
+        "id": "e5",
+        "fromNodeId": "mid",
+        "toNodeId": "w1",
+        "curveType": "straight",
+        "crossSection": "rect",
+        "dimensionPoints": []
+      },
+      {
+        "id": "e6",
+        "fromNodeId": "w1",
+        "toNodeId": "w2",
+        "curveType": "straight",
+        "crossSection": "rect",
+        "dimensionPoints": []
+      },
+      {
+        "id": "e7",
+        "fromNodeId": "w2",
+        "toNodeId": "outlet",
+        "curveType": "straight",
+        "crossSection": "rect",
+        "dimensionPoints": []
+      }
+    ]
+  },
+  "fluidProfiles": [
+    {
+      "id": "preset-water",
+      "name": "Water",
+      "builtIn": true,
+      "densityKgM3": 998.2,
+      "dynamicViscosityPaS": 0.001002,
+      "thermalConductivityWmK": 0.598,
+      "specificHeatCapacityJkgK": 4182,
+      "inletTemperatureC": 20
+    },
+    {
+      "id": "preset-pbs",
+      "name": "PBS buffer (1×)",
+      "builtIn": true,
+      "densityKgM3": 1005,
+      "dynamicViscosityPaS": 0.00102,
+      "thermalConductivityWmK": 0.6,
+      "specificHeatCapacityJkgK": 4100,
+      "inletTemperatureC": 20,
+      "note": "Close to water; the dissolved salts change density more than viscosity."
+    },
+    {
+      "id": "preset-ethanol",
+      "name": "Ethanol",
+      "builtIn": true,
+      "densityKgM3": 789,
+      "dynamicViscosityPaS": 0.0012,
+      "thermalConductivityWmK": 0.171,
+      "specificHeatCapacityJkgK": 2440,
+      "inletTemperatureC": 20
+    },
+    {
+      "id": "preset-mineral-oil",
+      "name": "Mineral oil (light)",
+      "builtIn": true,
+      "densityKgM3": 850,
+      "dynamicViscosityPaS": 0.03,
+      "thermalConductivityWmK": 0.14,
+      "specificHeatCapacityJkgK": 1900,
+      "inletTemperatureC": 20,
+      "note": "Grade-dependent: light oils run ~15–40 mPa·s, heavy ones far more. Check your bottle."
+    },
+    {
+      "id": "preset-glycerol-water",
+      "name": "Glycerol/water 50%",
+      "builtIn": true,
+      "densityKgM3": 1131.1,
+      "dynamicViscosityPaS": 0.00839402,
+      "thermalConductivityWmK": 0.4231,
+      "specificHeatCapacityJkgK": 3203,
+      "inletTemperatureC": 20,
+      "glycerolVolumePercent": 50,
+      "note": "Adjust the glycerol percentage to tune viscosity — the relationship is strongly non-linear."
+    },
+    {
+      "id": "preset-blood-analog",
+      "name": "Blood-mimicking analog",
+      "builtIn": true,
+      "densityKgM3": 1104.5,
+      "dynamicViscosityPaS": 0.00482772,
+      "thermalConductivityWmK": 0.4547,
+      "specificHeatCapacityJkgK": 3380,
+      "inletTemperatureC": 20,
+      "glycerolVolumePercent": 40,
+      "nonNewtonianNote": "Whole blood is shear-thinning: its apparent viscosity falls from ~10 mPa·s at low shear to ~3.5 mPa·s above roughly 100 s⁻¹. This analog is a Newtonian glycerol/water blend matched to that high-shear value, which is the right regime for most microchannels. At very low shear rates it will under-predict the real thing."
+    }
+  ],
+  "fluidSetup": {
+    "assignments": [
+      {
+        "portId": "inletA",
+        "role": "inlet",
+        "fluidProfileId": "preset-water",
+        "flowRateUlPerMin": 15,
+        "inletTemperatureC": null
+      },
+      {
+        "portId": "inletB",
+        "role": "inlet",
+        "fluidProfileId": "preset-pbs",
+        "flowRateUlPerMin": 15,
+        "inletTemperatureC": null
+      },
+      {
+        "portId": "outlet",
+        "role": "outlet",
+        "fluidProfileId": "preset-water",
+        "flowRateUlPerMin": 0,
+        "inletTemperatureC": null
+      }
+    ],
+    "chipMaterialThermalConductivityWmK": 0.2
+  },
+  "savedImages": [],
+  "drainageVents": [
+    {
+      "id": "vent-1",
+      "nodeId": "mid",
+      "diameterMm": 0.8,
+      "autoPlaced": false
+    }
+  ],
+  "presetLibraryRef": null
+}

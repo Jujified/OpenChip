@@ -1,0 +1,276 @@
+@import 'tailwindcss';
+
+/* The canonical design tokens, shared with the landing page and the wiki.
+   Edit `brand/tokens.css`, not a copy of it — `brand/sync.test.ts` fails the
+   test run if the three copies drift apart.
+
+   Tailwind v4 is order-sensitive: this must sit immediately after the
+   `tailwindcss` import so the `:root` values exist by the time `@theme inline`
+   below reads them. */
+@import '../brand/tokens.css';
+
+/* ==========================================================================
+   Tailwind theme mapping
+
+   `inline` maps the tokens onto utilities without freezing their values, which
+   is what keeps `bg-panel` correct in both schemes from a single declaration.
+   This block is Tailwind-specific and stays here: the two Astro sites consume
+   the same tokens as plain custom properties and have no use for it.
+   ========================================================================== */
+
+@theme inline {
+  --color-app: var(--app);
+  --color-panel: var(--panel);
+  --color-elevated: var(--elevated);
+  --color-sunken: var(--sunken);
+  --color-canvas: var(--canvas);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-quiet: var(--ink-quiet);
+  --color-ink-faint: var(--ink-faint);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-wash: var(--accent-wash);
+
+  --color-danger: var(--danger);
+  --color-danger-wash: var(--danger-wash);
+  --color-caution: var(--caution);
+  --color-caution-wash: var(--caution-wash);
+  --color-success: var(--success);
+
+  --ease-out: var(--ease-out);
+  --ease-in-out: var(--ease-in-out);
+
+  /* The stacks themselves live in `brand/tokens.css`; these only bind them to
+     Tailwind's `font-sans` / `font-mono` utility names. */
+  --font-sans: var(--font-ui);
+  --font-mono: var(--font-numeric);
+}
+
+/* ==========================================================================
+   base
+   ========================================================================== */
+
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background-color: var(--app);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* This is a measurement tool: digits must not jitter as values change. */
+    font-variant-numeric: tabular-nums;
+    overscroll-behavior: none;
+  }
+
+  /* One consistent focus treatment, keyboard-only. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  /* Numeric inputs: hide spinners, they fight precise typed entry. */
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+}
+
+/* ==========================================================================
+   motion primitives
+
+   Interactive feedback uses transitions, so a rapid click-click-click
+   retargets mid-flight instead of restarting.
+
+   Radix overlays are the deliberate exception: its presence layer keeps a
+   closing element mounted by waiting for `animationend`, which a transition
+   never fires. Those get keyframes, or they would vanish with no exit at all.
+
+   Exits run faster than entrances throughout — the user has already decided
+   by then, and waiting on a dismissal is what makes UI feel slow.
+   ========================================================================== */
+
+@utility oc-pressable {
+  transition: transform 160ms var(--ease-out), background-color 160ms ease,
+    border-color 160ms ease, color 160ms ease, opacity 160ms ease;
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+@keyframes oc-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes oc-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Never from scale(0): a panel that grows out of nothing reads as a glitch.
+   Modals keep a centered origin — unlike a menu they are not anchored to the
+   control that opened them. */
+@keyframes oc-dialog-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes oc-dialog-out {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.97);
+  }
+}
+
+/* Staggered list entrances inside the onboarding wizard. */
+@keyframes oc-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes oc-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes oc-menu-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@utility oc-overlay-motion {
+  &[data-state='open'] {
+    animation: oc-overlay-in 200ms var(--ease-out);
+  }
+  &[data-state='closed'] {
+    animation: oc-overlay-out 140ms var(--ease-out);
+  }
+}
+
+@utility oc-dialog-motion {
+  &[data-state='open'] {
+    animation: oc-dialog-in 220ms var(--ease-out);
+  }
+  &[data-state='closed'] {
+    animation: oc-dialog-out 140ms var(--ease-out);
+  }
+}
+
+/* Radix publishes the trigger's position as `--radix-*-transform-origin`, so
+   the menu scales out of the control that opened it rather than its own
+   center. Individually invisible; in aggregate it is why menus feel attached. */
+@utility oc-menu-motion {
+  transform-origin: var(--radix-dropdown-menu-content-transform-origin);
+
+  &[data-state='open'] {
+    animation: oc-menu-in 150ms var(--ease-out);
+  }
+  &[data-state='closed'] {
+    animation: oc-menu-out 100ms var(--ease-out);
+  }
+}
+
+@keyframes oc-list-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The catalogue list drops out of the control above it rather than fading in
+   place, so the connection between trigger and list is never in doubt. */
+@utility oc-fitting-list {
+  transform-origin: top center;
+  animation: oc-list-in 160ms var(--ease-out);
+}
+
+/* ==========================================================================
+   reduced motion
+
+   Fewer and gentler, not zero: opacity still carries the state change, all
+   positional movement goes away.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .oc-pressable:active:not(:disabled) {
+    transform: none;
+  }
+}

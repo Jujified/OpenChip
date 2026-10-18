@@ -1,0 +1,105 @@
+# Spiral (Dean-flow) mixer — continuous curvature, no corners anywhere.
+#
+# An Archimedean spiral from a 22 mm outer radius down to 7 mm over 2.5 turns,
+# 6 mm between turns. Sustained curvature sets up Dean vortices — a pair of
+# counter-rotating secondary flows in the channel cross-section that stir the
+# fluid transversely as it travels. Unlike diffusion, this gets BETTER the
+# harder you push it, which is why the inlets are seeded at 40 µL/min rather
+# than the usual 10.
+#
+# --- how the geometry is generated ------------------------------------------
+#
+# Sample the spiral every 45° and join consecutive samples with a cubic whose
+# handles lie along the local tangent:
+#
+#     r(θ)   = outerR + (innerR - outerR)/sweep · (θ - θ0)
+#     P(θ)   = centre + r(θ)·(cos θ, sin θ)
+#     dP/dθ  = (r'·cos θ - r·sin θ,  r'·sin θ + r·cos θ)
+#     k      = (4/3)·tan(Δθ/4)                 ← circular-arc approximation
+#     handles: P(θᵢ) + k·dP/dθ|θᵢ   and   P(θᵢ₊₁) - k·dP/dθ|θᵢ₊₁
+#
+# Scaling the arc constant by the local speed |dP/dθ| is what generalises the
+# circular-arc formula to a spiral, where the radius changes as the angle
+# sweeps. At 45° steps the error is under a thousandth of a millimetre — smooth
+# rather than visibly faceted, without hundreds of nodes to drag around.
+#
+# --- the two stubs a spiral cannot avoid ------------------------------------
+#
+# "No corners" is a claim about the mixing path, not the whole chip: a spiral
+# still needs somewhere for two streams to merge and somewhere for the outlet
+# to sit. Both are handled with curvature rather than kinks —
+#
+#   * the merge sits OUTSIDE the outer turn at (48,48), on the r = 22 tangent
+#     line, so the combined stream enters the spiral already travelling along
+#     it rather than turning into it;
+#   * the outlet is at the exact centre, reached by one last cubic that leaves
+#     the final sample along its own tangent (first handle) and arrives at the
+#     centre from above (second handle) — the same tangent hand-off used
+#     between every other pair of samples.
+#
+# Ports sit clear of the spiral's 22 mm envelope, which spans x, y ∈ [8, 52]
+# on this 60 × 60 chip; a luer boss needs 5.14 mm of edge clearance, and these
+# have 3.87 mm of rim beyond that.
+
+chip "Spiral mixer"
+printer standard-4k
+size 60 x 60
+base 4
+wall 2
+edge-spacing 3
+split two-piece at 2
+channel 0.8 x 0.5 rect
+
+port inletA at 54,42 luer-slip inlet water 40
+port inletB at 42,54 luer-slip inlet water 40
+port outlet at 30,30 luer-slip outlet
+
+node junction at 48,48
+path inletA -> junction
+path inletB -> junction
+path junction -> s0
+
+# theta 0.79 rad, r 22 mm
+node s0 at 45.56,45.56
+node s1 at 30,51.25
+path s0 -> s1 via (41.25,49.5) (35.64,51.5)
+node s2 at 15.5,44.5
+path s1 -> s2 via (24.36,51) (19.17,48.52)
+node s3 at 10.25,30
+path s2 -> s3 via (11.84,40.47) (10,35.24)
+node s4 at 16.56,16.56
+path s3 -> s4 via (10.5,24.76) (12.82,19.95)
+node s5 at 30,11.75
+path s4 -> s5 via (20.31,13.18) (25.16,11.5)
+node s6 at 42.37,17.63
+path s5 -> s6 via (34.84,12) (39.27,14.16)
+node s7 at 46.75,30
+path s6 -> s7 via (45.48,21.09) (47,25.56)
+node s8 at 41.31,41.31
+path s7 -> s8 via (46.5,34.44) (44.49,38.49)
+node s9 at 30,45.25
+path s8 -> s9 via (38.13,44.14) (34.04,45.5)
+node s10 at 19.75,40.25
+path s9 -> s10 via (25.96,45) (22.29,43.15)
+node s11 at 16.25,30
+path s10 -> s11 via (17.21,37.35) (16,33.65)
+node s12 at 20.81,20.81
+path s11 -> s12 via (16.5,26.35) (18.19,23.07)
+node s13 at 30,17.75
+path s12 -> s13 via (23.42,18.55) (26.75,17.5)
+node s14 at 38.13,21.87
+path s13 -> s14 via (33.25,18) (36.15,19.53)
+node s15 at 40.75,30
+path s14 -> s15 via (40.11,24.2) (41,27.15)
+node s16 at 37.07,37.07
+path s15 -> s16 via (40.5,32.85) (39.13,35.37)
+node s17 at 30,39.25
+path s16 -> s17 via (35.02,38.77) (32.45,39.5)
+node s18 at 23.99,36.01
+path s17 -> s18 via (27.55,39) (25.4,37.78)
+node s19 at 22.25,30
+path s18 -> s19 via (22.57,34.24) (22,32.06)
+node s20 at 25.05,25.05
+path s19 -> s20 via (22.5,27.94) (23.56,26.18)
+# final tangent hand-off to the centre outlet
+path s20 -> outlet via (26.54,23.92) (30,33)

@@ -1,0 +1,34 @@
+# Flow-focusing droplet generator.
+#
+# A dispersed phase entering from the top is squeezed between two continuous-
+# phase streams and forced through a narrow orifice, which breaks it into
+# droplets. The orifice is built from dimension markers on one segment rather
+# than as a separate short channel, so the solid generator lofts a smooth neck
+# instead of stepping between two constant channels.
+
+chip "Flow-focusing droplet generator"
+printer standard-4k
+size 40 x 50
+base 4
+wall 2
+edge-spacing 3
+split two-piece at 2
+channel 0.6 x 0.4 rect
+
+port dispersed at 20,44 luer-slip inlet water 5
+port oilLeft   at 7,32  luer-slip inlet oil 15
+port oilRight  at 33,32 luer-slip inlet oil 15
+port outlet    at 20,8  luer-lock outlet
+
+node cross  at 20,32
+node throat at 20,28
+node relax  at 20,20
+
+path dispersed -> cross
+path oilLeft   -> cross
+path oilRight  -> cross
+
+# The throat: 0.6 mm in, pinched to 0.35 mm at 45% along, released to 0.9 mm.
+path cross -> throat taper 0.6x0.4@0 0.35x0.3@0.45 0.9x0.5@1
+path throat -> relax  taper 0.9x0.5@0 1.2x0.6@1
+path relax -> outlet  width 1.2x0.6

@@ -1,0 +1,62 @@
+# Christmas-tree gradient generator — two inputs, four evenly stepped outputs.
+#
+# Each branch point splits a stream in half and each junction averages two
+# neighbours, so concentration steps linearly across the outlets. The short
+# serpentine between levels exists purely to homogenise a combined stream
+# before it is split again.
+#
+# The linear series holds ONLY if every branch has the same hydraulic
+# resistance, so every channel here is the same width. Widen one and the split
+# stops being even — resistance goes as roughly width^-3.
+
+chip "Gradient generator"
+printer standard-4k
+size 60 x 70
+base 4
+wall 2
+edge-spacing 3
+split two-piece at 2
+channel 0.8 x 0.5 rect
+
+port inletA at 24,64 luer-slip inlet water 20
+port inletB at 36,64 luer-slip inlet water 20
+port out1 at 12,10 luer-slip outlet
+port out2 at 24,10 luer-slip outlet
+port out3 at 36,10 luer-slip outlet
+port out4 at 48,10 luer-slip outlet
+
+node splitA at 24,58
+node splitB at 36,58
+path inletA -> splitA
+path inletB -> splitB
+
+# --- level B: three streams, the middle one fed by both parents ------------
+node b1 at 18,52
+node b2 at 30,52
+node b3 at 42,52
+path splitA -> b1
+path splitA -> b2
+path splitB -> b2
+path splitB -> b3
+
+# Mixing runs, then the split points for the next level.
+path b1 -> (15.5,49) -> (20.5,46) -> (15.5,43) -> (18,40) -> bs1(18,37)
+path b2 -> (27.5,49) -> (32.5,46) -> (27.5,43) -> (30,40) -> bs2(30,37)
+path b3 -> (39.5,49) -> (44.5,46) -> (39.5,43) -> (42,40) -> bs3(42,37)
+
+# --- level C: four streams -------------------------------------------------
+node c1 at 12,31
+node c2 at 24,31
+node c3 at 36,31
+node c4 at 48,31
+path bs1 -> c1
+path bs1 -> c2
+path bs2 -> c2
+path bs2 -> c3
+path bs3 -> c3
+path bs3 -> c4
+
+path c1 -> (9.5,28)  -> (14.5,25) -> (9.5,22)  -> (12,19) -> out1
+path c2 -> (21.5,28) -> (26.5,25) -> (21.5,22) -> (24,19) -> out2
+path c3 -> (33.5,28) -> (38.5,25) -> (33.5,22) -> (36,19) -> out3
+path c4 -> (45.5,28) -> (50.5,25) -> (45.5,22) -> (48,19) -> out4

@@ -1,0 +1,29 @@
+# Counter-flow heat exchanger — two channels running 0.4 mm apart, opposed.
+#
+# This example exists to show a design whose checks you ACCEPT rather than fix.
+# Two independent networks and a 0.4 mm wall between them are both flagged, and
+# both are the point of the device: heat has to cross that wall, and the two
+# streams must never meet. OpenChip never blocks an export — it tells you what
+# it sees and leaves the call to you.
+#
+# Expected report: 8 cautions (7 × channels-too-close, 1 × disconnected-network).
+
+chip "Counter-flow exchanger"
+printer standard-4k
+size 40 x 60
+base 4
+wall 2
+edge-spacing 3
+split two-piece at 2
+channel 0.8 x 0.5 rect
+
+# Hot side runs left to right, at 60 °C.
+port hotIn  at 6,30  luer-slip inlet water 10 at 60C
+port hotOut at 34,30 luer-slip outlet
+path hotIn -> (14,30) -> (26,30) -> hotOut
+
+# Cold side runs right to left, 1.2 mm away — 0.4 mm of wall between the two
+# 0.8 mm channels. Thin on purpose: wall thickness is the whole resistance.
+port coldIn  at 34,31.2 luer-slip inlet glycerol 10 at 20C
+port coldOut at 6,31.2  luer-slip outlet
+path coldIn -> (26,31.2) -> (14,31.2) -> coldOut

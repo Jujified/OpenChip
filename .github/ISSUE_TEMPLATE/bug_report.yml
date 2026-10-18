@@ -1,0 +1,38 @@
+name: Bug report
+description: Something in OpenChip doesn't work, or gives a wrong result.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. The single most useful thing you can attach is the `.openchip` file you were working on (Project → Save, then drag it in below). It carries the printer profile, so it reproduces exactly what you saw.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the attached file
+        2. Go to the CAD Preview tab
+        3. ...
+  - type: textarea
+    id: file
+    attributes:
+      label: Project file
+      description: Drag your `.openchip` file here. If GitHub won't accept the extension, zip it or rename it to `.json`.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: e.g. Chrome 140, Firefox 145, Safari 19
+  - type: input
+    id: version
+    attributes:
+      label: Where you ran it
+      description: The hosted app at app.openchip.tech, or a local copy (give the commit or release).

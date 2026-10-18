@@ -1,0 +1,145 @@
+/* ==========================================================================
+   OpenChip design tokens — the canonical copy
+
+   This file is the single source of truth for colour, elevation and motion
+   across all three surfaces: the app (`src/index.css` imports it), the landing
+   page and the wiki (`scripts/sync-brand.mjs` copies it into both).
+
+   Edit here. Never edit the generated copies — `brand/sync.test.ts` fails the
+   root test run if they drift.
+
+   Raw values live on `:root` so they can flip with the colour scheme. The app's
+   `@theme inline` block, which maps them onto Tailwind utilities, deliberately
+   stays in `src/index.css`: it is Tailwind-specific and the two Astro sites
+   have no use for it.
+   ========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  /* --- surfaces, light ------------------------------------------------- */
+  --app: #f6f6f7;
+  --panel: #ffffff;
+  --elevated: #ffffff;
+  --sunken: #eeeef0;
+  --canvas: #fbfbfc;
+
+  /* --- lines ----------------------------------------------------------- */
+  --line: #e4e4e7;
+  --line-strong: #d0d0d5;
+
+  /* --- text ------------------------------------------------------------ *
+   * `--ink-faint` is around 2.5:1 on `--panel`. That is right for what it is
+   * for — a hairline, a tick mark, a disabled glyph — and well under the 4.5:1
+   * that body text needs. Anything a reader is expected to *read* takes
+   * `--ink-quiet` instead, which clears AA at the 10–11px sizes these surfaces
+   * use it at. Both sides of the mix flip with the colour scheme, so one
+   * declaration covers light and dark.                                       */
+  --ink: #18181b;
+  --ink-muted: #6b7280;
+  --ink-quiet: color-mix(in srgb, var(--ink-faint) 55%, var(--ink));
+  --ink-faint: #9ca3af;
+
+  /* --- accent ---------------------------------------------------------- */
+  --accent: #5850ec;
+  --accent-hover: #4f46e5;
+  --accent-ink: #ffffff;
+  --accent-wash: #eef0fe;
+
+  /* --- status ---------------------------------------------------------- */
+  --danger: #dc2626;
+  --danger-wash: #fef2f2;
+  --caution: #b45309;
+  --caution-wash: #fffbeb;
+  --success: #059669;
+
+  /* --- shadows --------------------------------------------------------- */
+  --shadow-menu: 0 1px 2px rgb(0 0 0 / 0.06), 0 8px 24px -6px rgb(0 0 0 / 0.14);
+  --shadow-dialog: 0 2px 4px rgb(0 0 0 / 0.04), 0 24px 56px -12px rgb(0 0 0 / 0.22);
+
+  /* --- motion ---------------------------------------------------------- *
+   * The stock CSS easings are too weak to read as intentional. These are
+   * the stronger variants: `out` for anything entering or responding to a
+   * click, `in-out` for something travelling across the screen.            */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --app: #0c0d0f;
+    --panel: #101114;
+    --elevated: #17191d;
+    --sunken: #0a0b0d;
+    --canvas: #0e0f12;
+
+    --line: #23252b;
+    --line-strong: #33363e;
+
+    --ink: #ededf0;
+    --ink-muted: #8b8f99;
+    --ink-faint: #62666f;
+
+    --accent: #6d6aff;
+    --accent-hover: #817eff;
+    --accent-ink: #ffffff;
+    --accent-wash: #191a33;
+
+    --danger: #f87171;
+    --danger-wash: #251517;
+    --caution: #fbbf24;
+    --caution-wash: #241d0f;
+    --success: #34d399;
+
+    --shadow-menu: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -6px rgb(0 0 0 / 0.6);
+    --shadow-dialog: 0 2px 4px rgb(0 0 0 / 0.3), 0 24px 56px -12px rgb(0 0 0 / 0.7);
+  }
+}
+
+/* ==========================================================================
+   typography
+
+   The app runs on the platform font and should keep running on it: a
+   measurement tool wants the face the OS has already optically sized and
+   hinted for its own UI, and the numerals must be tabular so a value doesn't
+   jitter as it changes.
+
+   So the stacks declared here are the platform ones, and they are what the app
+   gets. The landing page and the wiki each override `--font-display` and
+   `--font-mono` in their own `fonts.css` to put a self-hosted web face in front
+   of the same fallback chain. Nothing the app does not ship is named here.
+   ========================================================================== */
+
+:root {
+  /* Body and UI everywhere. Continuity with the app matters more than novelty. */
+  --font-ui:
+    ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+
+  /* Hero and section headings. Marketing surfaces put Inter Tight in front. */
+  --font-display: var(--font-ui);
+
+  /* Dimensions, Reynolds numbers, µm figures — anything the reader will
+     compare down a column. Marketing surfaces put JetBrains Mono in front.
+
+     Named `--font-numeric` rather than `--font-mono` on purpose: the app binds
+     Tailwind's `font-mono` utility to this token, and a Tailwind theme key of
+     the same name would emit `--font-mono: var(--font-mono)` into `:root` —
+     a self-reference, which makes the property invalid at computed-value time
+     and silently drops every monospaced readout in the app. */
+  --font-numeric:
+    ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* --- size-specific tracking -----------------------------------------  *
+   * A single letter-spacing value across a type scale is wrong at one end
+   * of it. Display sizes need negative tracking and need more of it as they
+   * grow; body sits at zero; small mono captions need a little positive to
+   * stay legible at weight.                                                */
+  --tracking-display-xl: -0.035em;
+  --tracking-display-lg: -0.028em;
+  --tracking-display-md: -0.022em;
+  --tracking-heading: -0.015em;
+  --tracking-body: 0em;
+  --tracking-mono: 0.01em;
+  --tracking-mono-caption: 0.04em;
+}

@@ -1,0 +1,55 @@
+# How to cite OpenChip.
+#
+# Read by GitHub (which renders a "Cite this repository" button) and by several
+# reference managers. Format: Citation File Format 1.2.0 — https://citation-file-format.github.io
+#
+# Zenodo also reads this file when it archives a GitHub release, so the authors,
+# ORCID, title and licence here become the metadata of the minted DOI.
+#
+# One field is deliberately absent:
+#
+#   doi              None minted yet. Zenodo mints one per release; add the
+#                    concept DOI (the one that always resolves to the latest
+#                    version) once the first release exists.
+
+cff-version: 1.2.0
+message: >-
+  If OpenChip designed a device that appears in your paper, please cite the
+  software and state the version. The geometry generator and the design-check
+  thresholds change between versions.
+
+title: "OpenChip: browser-based microfluidic chip design for resin printing"
+
+abstract: >-
+  OpenChip is a browser-based tool for designing microfluidic mixing chips and
+  exporting them as STL files for desktop resin (mSLA) printing. Users draw a 2D
+  channel network, configure ports and mixing chambers, generate a solid CAD
+  model, check the design against their printer's resolution, estimate the flow
+  analytically, and export STL, SVG, OpenSCAD or images. It runs entirely
+  client-side with no backend.
+
+type: software
+
+authors:
+  - family-names: Cimoca
+    given-names: Julian
+    orcid: "https://orcid.org/0009-0009-8978-5337"
+    email: info@openchip.tech
+
+license: MIT
+
+version: 1.0.0
+
+url: "https://openchip.tech"
+
+repository-code: "https://github.com/Jujified/OpenChip"
+
+keywords:
+  - microfluidics
+  - lab-on-a-chip
+  - 3D printing
+  - stereolithography
+  - mSLA
+  - CAD
+  - laminar flow
+  - open hardware
