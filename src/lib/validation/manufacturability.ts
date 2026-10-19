@@ -9,7 +9,7 @@
 import { distance } from '../geometry';
 import { nodeFootprintMm } from '../graphOps';
 import { getLoft } from '../loft';
-import { LUER_TAPER, specNumber } from '../ports';
+import { LUER_TAPER, portOuterFootprintMm, specNumber } from '../ports';
 import type { Warning } from './types';
 import type { ChannelNode, Point2 } from '../../types/project';
 import type { ValidationInput } from './types';
@@ -117,16 +117,19 @@ export function checkMinimumFeature(input: ValidationInput): Warning[] {
 /**
  * Clearance from a channel to the chip boundary.
  *
- * Ports are measured on their boss footprint, not their bore — a luer boss is
- * 4.3 mm across where the bore is 1.6 mm, and it is the boss that runs out of
- * material at the edge.
+ * Ports are measured on everything they print, not their bore: a luer slip's
+ * boss is 5.9 mm across (its 4.27 mm taper mouth plus the boss wall) where the
+ * bore is 1.6 mm, and it is the boss that runs out of material at the edge.
  */
 export function checkBoundaryClearance(input: ValidationInput): Warning[] {
   const { graph, chipParams } = input;
   const loft = getLoft(graph, chipParams);
   const warnings: Warning[] = [];
 
-  const footprintOf = (node: ChannelNode): number => nodeFootprintMm(node, chipParams);
+  const footprintOf = (node: ChannelNode): number =>
+    node.type === 'port'
+      ? portOuterFootprintMm(node.portType, node.customSpec)
+      : nodeFootprintMm(node, chipParams);
 
   for (const node of graph.nodes) {
     const radius = footprintOf(node) / 2;

@@ -212,9 +212,10 @@ describe('glycerol/water', () => {
   it('gives the blood analog a blood-like viscosity and flags the shear-thinning caveat', () => {
     const analog = FLUID_PRESETS.find((f) => f.id === 'preset-blood-analog');
     assert.ok(analog);
-    // Whole blood at high shear is ~3.5 mPa·s.
+    // Whole blood at high shear is ~3.5 mPa·s, and the preset's note says it is
+    // matched to that value — so hold it to that, not to "somewhere blood-ish".
     assert.ok(
-      analog.dynamicViscosityPaS > 0.002 && analog.dynamicViscosityPaS < 0.006,
+      analog.dynamicViscosityPaS > 0.0033 && analog.dynamicViscosityPaS < 0.0037,
       `got ${analog.dynamicViscosityPaS} Pa·s`,
     );
     assert.ok(analog.nonNewtonianNote, 'the shear-thinning caveat must be carried in the data');

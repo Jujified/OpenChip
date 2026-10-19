@@ -6,6 +6,9 @@ import {
   PORT_TYPES,
   bossFilletMm,
   matchFitting,
+  portFootprintMm,
+  portOuterFootprintMm,
+  PORT_BOSS_WALL_MM,
   portSpecFor,
   taperRatioOf,
   type FittingPreset,
@@ -160,6 +163,24 @@ describe('port presets', () => {
         ).toBe(true);
       }
     }
+  });
+});
+
+describe('portOuterFootprintMm', () => {
+  it('adds the boss wall all round when a boss is printed', () => {
+    const spec = { bossHeightMm: 3.5 };
+    expect(portOuterFootprintMm('luer', spec)).toBeCloseTo(
+      portFootprintMm('luer', spec) + 2 * PORT_BOSS_WALL_MM,
+    );
+  });
+
+  it('is the opening alone when there is no boss', () => {
+    expect(portOuterFootprintMm('barb', { bossHeightMm: 0 })).toBe(portFootprintMm('barb', {}));
+  });
+
+  it("leaves a luer lock at its thread, which is already its outermost part", () => {
+    const spec = { bossHeightMm: 5 };
+    expect(portOuterFootprintMm('luer-lock', spec)).toBe(portFootprintMm('luer-lock', spec));
   });
 });
 

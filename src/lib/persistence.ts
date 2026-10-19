@@ -25,6 +25,7 @@ import type { PersistStorage, StateStorage, StorageValue } from 'zustand/middlew
 
 export const SETTINGS_STORAGE_KEY = 'openchip.settings.v1';
 export const DRAFT_STORAGE_KEY = 'openchip.draft.v1';
+export const CHECK_SETTINGS_STORAGE_KEY = 'openchip.check-settings.v1';
 
 // ---------------------------------------------------------------------------
 // safe localStorage

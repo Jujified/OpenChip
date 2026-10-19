@@ -36,6 +36,8 @@ export function CadToolbar({ viewport }: { viewport: RefObject<CadViewportHandle
   const splitType = useProjectStore((s) => s.project.chipParams.splitType);
 
   const twoPiece = splitType === 'two-piece';
+  // A slide chip separates too: Explode lifts the glass off the plate.
+  const separable = twoPiece || splitType === 'glass-slide';
   // Isolate belongs to X-ray — it is the same question (what is inside the
   // block?) taken to its end — so the controls appear with it and not before.
   const xray = displayMode === 'xray';
@@ -100,12 +102,14 @@ export function CadToolbar({ viewport }: { viewport: RefObject<CadViewportHandle
 
       <ToolButton
         active={exploded}
-        disabled={!twoPiece}
+        disabled={!separable}
         onClick={toggleExploded}
         title={
           twoPiece
             ? 'Separate the two halves to inspect the bonding faces'
-            : 'A monolithic chip has nothing to separate'
+            : separable
+              ? 'Lift the glass slide off to inspect the open channels'
+              : 'A monolithic chip has nothing to separate'
         }
       >
         <Scan size={15} />
