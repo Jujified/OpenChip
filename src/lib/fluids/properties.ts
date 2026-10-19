@@ -196,7 +196,9 @@ export const FLUID_PRESETS: FluidProfile[] = [
     note: 'Adjust the glycerol percentage to tune viscosity — the relationship is strongly non-linear.',
   },
   {
-    ...glycerolWaterProfile(40, 20, {
+    // 33.5 % by volume is what lands on ~3.5 mPa·s at 20 °C with the Cheng
+    // model above; 40 % (a common rule of thumb) gives ~4.8.
+    ...glycerolWaterProfile(33.5, 20, {
       id: 'preset-blood-analog',
       name: 'Blood-mimicking analog',
     }),

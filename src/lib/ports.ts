@@ -445,6 +445,23 @@ export function portFootprintMm(portType: PortType, spec: Record<string, unknown
   }
 }
 
+/** The wall printed around a port's opening to make its boss or pedestal, mm. */
+export const PORT_BOSS_WALL_MM = 0.8;
+
+/**
+ * The outer diameter of what a port actually prints on the chip face, mm.
+ *
+ * `portFootprintMm` is the opening; a port with a boss or pedestal adds
+ * `PORT_BOSS_WALL_MM` of wall all round it, and that wall is what reaches the
+ * chip edge first. A luer lock's footprint is already its outermost part, the
+ * thread, so it is unchanged.
+ */
+export function portOuterFootprintMm(portType: PortType, spec: Record<string, unknown> = {}): number {
+  const footprint = portFootprintMm(portType, spec);
+  if (portType === 'luer-lock') return footprint;
+  return specNumber(spec, 'bossHeightMm', 0) > 0 ? footprint + 2 * PORT_BOSS_WALL_MM : footprint;
+}
+
 /** Fresh `customSpec` for a port type, keeping any values the user already set. */
 export function portSpecFor(
   portType: PortType,

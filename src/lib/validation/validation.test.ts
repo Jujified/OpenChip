@@ -175,6 +175,33 @@ describe('acceptance fixture — all three categories appear', () => {
 // ---------------------------------------------------------------------------
 
 describe('manufacturability', () => {
+  it('measures a port to the chip edge by its boss, not just its opening', () => {
+    // A luer slip opening is 4.27 mm across; its boss adds 0.8 mm all round.
+    // 5.5 mm in, the opening clears the 3 mm edge spacing and the boss does not.
+    const withBoss = (bossHeightMm: number): ChannelNode => ({
+      id: 'a',
+      x: 5.5,
+      y: 30,
+      type: 'port',
+      portType: 'luer',
+      diameterMm: 1.6,
+      customSpec: { bossHeightMm },
+    });
+    const run = (a: ChannelNode) =>
+      runValidation({
+        graph: { nodes: [a, port('b', 30, 30)], edges: [edge('e', 'a', 'b')] },
+        chipParams: base(),
+        printerProfile: printer,
+      });
+
+    const boundary = (warnings: Warning[]) =>
+      warnings.find((w) => w.kind === 'channel-near-boundary' && w.target.nodeIds.includes('a'));
+    const flagged = boundary(run(withBoss(3.5)).warnings);
+    assert.ok(flagged, 'the boss runs within the edge spacing');
+    assert.ok(Math.abs(flagged.measurement!.value - (5.5 - (4.27 + 1.6) / 2)) < 1e-6);
+    assert.ok(!boundary(run(withBoss(0)).warnings), 'with no boss, only the opening counts');
+  });
+
   it('measures the narrowest point, not the average', () => {
     const graph: ChannelGraph = {
       nodes: [port('a', 10, 10), port('b', 30, 10)],

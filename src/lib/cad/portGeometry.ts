@@ -28,7 +28,13 @@
  */
 
 import type { PortNode } from '../../types/project';
-import { bossFilletMm, LUER_LOCK_GEOMETRY, LUER_TAPER, specNumber } from '../ports';
+import {
+  bossFilletMm,
+  LUER_LOCK_GEOMETRY,
+  LUER_TAPER,
+  PORT_BOSS_WALL_MM,
+  specNumber,
+} from '../ports';
 import { helixStations, sweepStations, type RawMesh } from './sweep';
 
 export const THREAD_APPROXIMATION_NOTE =
@@ -332,7 +338,7 @@ export function buildPort(
   const cavityBottom = channelZ - 0.01;
 
   let approximated = false;
-  let bossRadius = bore + 0.8;
+  let bossRadius = bore + PORT_BOSS_WALL_MM;
 
   switch (node.portType) {
     case 'luer':
@@ -350,7 +356,7 @@ export function buildPort(
       const shaft = coneMesh(bore, bore, cavityBottom, taperBottom + 0.01, segments);
       if (shaft) cavity.push(shaft);
 
-      bossRadius = large + 0.8;
+      bossRadius = large + PORT_BOSS_WALL_MM;
 
       if (node.portType === 'luer-lock') {
         // The taper above stays whole: the seal is the full 6% cone. The boss
@@ -411,7 +417,7 @@ export function buildPort(
       );
       if (shaft) cavity.push(shaft);
 
-      bossRadius = large + 0.8;
+      bossRadius = large + PORT_BOSS_WALL_MM;
       break;
     }
 
@@ -441,7 +447,7 @@ export function buildPort(
       const shaft = coneMesh(bore, bore, cavityBottom, base + length + 0.01, segments);
       if (shaft) cavity.push(shaft);
 
-      bossRadius = crest + 0.8;
+      bossRadius = crest + PORT_BOSS_WALL_MM;
       break;
     }
 
@@ -456,7 +462,7 @@ export function buildPort(
       const shaft = coneMesh(bore, bore, cavityBottom, barrelBottom + 0.01, segments);
       if (shaft) cavity.push(shaft);
 
-      bossRadius = barrel + 0.8;
+      bossRadius = barrel + PORT_BOSS_WALL_MM;
       break;
     }
 
@@ -471,7 +477,7 @@ export function buildPort(
       const shaft = coneMesh(bore, bore, cavityBottom, socketBottom + 0.01, segments);
       if (shaft) cavity.push(shaft);
 
-      bossRadius = outer + 0.8;
+      bossRadius = outer + PORT_BOSS_WALL_MM;
       break;
     }
   }
