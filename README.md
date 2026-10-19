@@ -1,6 +1,6 @@
 # OpenChip
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23461557.svg)](https://doi.org/10.5281/zenodo.23461557)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23461556.svg)](https://doi.org/10.5281/zenodo.23461556)
 
 **Design microfluidic chips in your browser and print them on a desktop resin printer.**
 
@@ -100,7 +100,7 @@ anything clinical.
 
 If OpenChip designed a device that appears in your work, please cite the
 software and the version you used. The DOI is
-[10.5281/zenodo.23461557](https://doi.org/10.5281/zenodo.23461557), and GitHub's
+[10.5281/zenodo.23461556](https://doi.org/10.5281/zenodo.23461556), and GitHub's
 **Cite this repository** button gives the details from
 [`CITATION.cff`](CITATION.cff).
 
@@ -110,7 +110,7 @@ software and the version you used. The DOI is
   author  = {Cimoca, Julian},
   year    = {2026},
   version = {1.0.0},
-  doi     = {10.5281/zenodo.23461557},
+  doi     = {10.5281/zenodo.23461556},
   url     = {https://openchip.tech}
 }
 ```

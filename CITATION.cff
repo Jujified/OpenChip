@@ -6,8 +6,8 @@
 # Zenodo also reads this file when it archives a GitHub release, so the authors,
 # ORCID, title and licence here become the metadata of the minted DOI.
 #
-# `doi` is the Zenodo DOI for OpenChip. Each GitHub release is archived on
-# Zenodo under it.
+# `doi` is the Zenodo concept DOI: it always resolves to the latest version.
+# Each GitHub release is archived on Zenodo with its own version DOI too.
 
 cff-version: 1.2.0
 message: >-
@@ -37,7 +37,7 @@ license: MIT
 
 version: 1.0.0
 
-doi: 10.5281/zenodo.23461557
+doi: 10.5281/zenodo.23461556
 
 url: "https://openchip.tech"
 
