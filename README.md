@@ -1,58 +1,55 @@
 # OpenChip
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23461556.svg)](https://doi.org/10.5281/zenodo.23461556)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**Design microfluidic chips in your browser and print them on a desktop resin printer.**
+OpenChip is a browser-based tool for designing microfluidic chips and exporting
+them as STL files for desktop resin (mSLA) printers, made for researchers who
+need a chip and do not use CAD.
 
-Draw a channel network, size every channel, add standard fittings, check it
-against your printer, estimate the flow, and export a print-ready STL. It runs
-entirely in your browser, with no account, no server and no network connection
-needed.
+![Starting from the serpentine mixer template: the two-inlet channel network opens in the Draw tab, the Fluid Dynamics tab shows pressure and residence-time heatmaps, and the CAD Preview shows the chip in X-ray, exploded into channel plate and lid, before exporting the STL.](docs/demo.gif)
 
-**[Open the app →](https://app.openchip.tech)** · **[Documentation](https://wiki.openchip.tech)** · **[Website](https://openchip.tech)**
+**[Try it now at app.openchip.tech](https://app.openchip.tech)**. It runs in the
+browser with no account and no install, and nothing you draw is uploaded.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/images/draw-dark.webp">
-  <img alt="The Draw tab with a counter-flow heat exchanger open: two channels running in opposite directions, one segment tapering from 0.8 mm to 1.4 mm between two dimension markers, and the inspector showing its sizes." src=".github/images/draw-light.webp">
-</picture>
+## What you can do
 
-## What it does
-
-- **Draw channel networks** with straight and curved (bezier) segments, snapping
-  and millimetre rulers. Set a channel's width and height anywhere along it and
-  it tapers smoothly between them, across a whole path if you like.
-- **Ports and fittings** from a catalogue: Luer slip and Luer-lock sockets,
-  male Luer cones, hose barbs, syringe sockets, or your own dimensions.
-- **A real 3D model**, built in the browser with
-  [manifold-3d](https://github.com/elalish/manifold). Print it as two pieces
-  (a channel plate and a lid), as one sealed block, or as an open plate capped
-  with a glass microscope slide.
-- **Design checks against your printer.** Channels below your printer's
-  resolution, walls too thin to survive, features too close to the edge,
-  trapped resin, unsupported overhangs. Every check is a warning that explains
-  the risk; none of them ever blocks an export.
-- **Flow estimates** from a one-dimensional network model: pressure drop,
+- **Start from a template or draw your own.** Seven editable starters
+  (serpentine, T-junction, Y-junction, herringbone and spiral mixers, a gradient
+  generator and a flow-focusing droplet generator), or draw straight and curved
+  channels and set widths that taper along a path. Ports come from a catalogue
+  of Luer slip and Luer-lock sockets, male Luer cones, hose barbs and syringe
+  sockets, or your own dimensions.
+- **Check it against your printer.** Warnings for channels below the printer's
+  minimum feature size, walls too thin between channels, features too close to
+  the edge, trapped resin, unsupported overhangs and designs larger than the
+  build volume. Every check is a warning; none blocks an export.
+- **Preview and export the solid.** A 3D model built in the browser with
+  [manifold-3d](https://github.com/elalish/manifold), printed as two pieces (a
+  channel plate and a lid), one sealed block, or an open plate capped with a
+  glass slide. Export STL for printing, editable OpenSCAD source, SVG
+  schematics, PNG snapshots and a presentation bundle.
+- **Estimate the flow.** A one-dimensional network model gives pressure drop,
   Reynolds number, wall shear, residence time, heat exchange between
-  neighbouring channels, reagent use and throughput, with heatmaps.
-- **Export** STL for printing, editable OpenSCAD source, SVG schematics, and
-  presentation-ready figures.
-- **Starter templates**: serpentine, T- and Y-junction, herringbone and spiral
-  mixers, a gradient generator, and a droplet generator, each fully editable.
-- **Design with AI**: describe a chip in plain English and an AI assistant with
-  the [`openchip-design` skill](skills/openchip-design/SKILL.md) lays it out,
-  checks it and hands back a file to open. Works with the Claude app and with
-  coding agents (`npx skills add Jujified/OpenChip`). OpenChip itself sends
+  neighbouring channels, and reagent use, with heatmaps.
+- **Save and share `.openchip` files**, plain JSON you can version alongside a
+  paper, or describe a chip in plain English to an AI assistant with the
+  [`openchip-design` skill](skills/openchip-design/SKILL.md) and open the file
+  it returns (`npx skills add Jujified/OpenChip`). OpenChip itself sends
   nothing anywhere.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/images/fluid-dark.webp">
-  <img alt="The Fluid Dynamics tab showing a temperature heatmap of the counter-flow exchanger, with a per-segment table of flow, pressure drop, wall shear, Reynolds number and temperatures." src=".github/images/fluid-light.webp">
-</picture>
+## Documentation
 
-## Try it
+The full documentation is at **[wiki.openchip.tech](https://wiki.openchip.tech)**.
+Good places to start:
 
-The quickest way is the hosted app at **[app.openchip.tech](https://app.openchip.tech)**.
-Nothing you draw leaves your machine.
+- [Your first chip](https://wiki.openchip.tech/start/your-first-chip/)
+- [Templates](https://wiki.openchip.tech/guide/templates/)
+- [Design checks](https://wiki.openchip.tech/reference/design-checks/)
+- [Export formats](https://wiki.openchip.tech/reference/export-formats/)
+- [3D printing microfluidic chips](https://wiki.openchip.tech/printing/3d-printing-microfluidic-chips/)
+
+## First steps
 
 Open the **Library** tab and pick a template, or open
 [`examples/counter-flow-exchanger.openchip`](examples/counter-flow-exchanger.openchip)
