@@ -170,9 +170,9 @@ describe('content hash', () => {
 
   it('ignores formatting and key order', async () => {
     const profile = makeProfile();
-    const reordered = JSON.parse(
-      JSON.stringify({ measurements: profile.measurements, ...profile }, null, 8),
-    );
+    const reversed = Object.fromEntries(Object.entries(profile).reverse());
+    const reordered = JSON.parse(JSON.stringify(reversed, null, 8));
+    assert.notDeepEqual(Object.keys(reordered), Object.keys(profile));
     assert.equal(await hashDfmProfile(reordered), await hashDfmProfile(profile));
   });
 
