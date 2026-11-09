@@ -32,27 +32,44 @@ export interface ChannelPlacement {
   halfHeight: number;
   /** True when the section straddles the split plane rather than hanging below it. */
   straddlesSplit: boolean;
+  /**
+   * How far the ceiling is lifted above `centerZ + halfHeight`, mm. Zero for a
+   * nominal build. `centerZ` and `halfHeight` always describe the channel as
+   * drawn, so nothing sized from them moves; the roof alone is at
+   * `centerZ + halfHeight + ceilingRaiseMm`.
+   */
+  ceilingRaiseMm: number;
 }
 
 /**
  * `widthMm` and `heightMm` are the local values from the loft solution.
  * `heightMm` is ignored for `round`, where the diameter is the width.
+ *
+ * `ceilingRaiseMm` is print correction for cure-through into a roofed channel:
+ * the floor stays where it was drawn and only the ceiling goes up. It is zero
+ * everywhere except a compensated export or its preview.
  */
 export function placeChannel(
   crossSection: CrossSection,
   widthMm: number,
   heightMm: number,
   splitHeight: number,
+  ceilingRaiseMm = 0,
 ): ChannelPlacement {
   if (crossSection === 'round') {
-    return { centerZ: splitHeight, halfHeight: widthMm / 2, straddlesSplit: true };
+    return { centerZ: splitHeight, halfHeight: widthMm / 2, straddlesSplit: true, ceilingRaiseMm };
   }
   return {
     centerZ: splitHeight - heightMm / 2,
     halfHeight: heightMm / 2,
     straddlesSplit: false,
+    ceilingRaiseMm,
   };
 }
+
+/** Z of a placed channel's roof, including any ceiling raise. */
+export const ceilingZ = (place: ChannelPlacement): number =>
+  place.centerZ + place.halfHeight + place.ceilingRaiseMm;
 
 /**
  * The 2D profile of a channel, in (across, up) coordinates relative to the
@@ -66,13 +83,19 @@ export function profilePoints(
   widthMm: number,
   heightMm: number,
   radialSegments: number,
+  ceilingRaiseMm = 0,
 ): { u: number; v: number }[] {
   if (crossSection === 'round') {
     const r = widthMm / 2;
+    // A raised round channel keeps its lower semicircle and stretches the
+    // upper one into a half-ellipse, so the floor and the widest point stay
+    // exactly where they were drawn.
+    const stretch = ceilingRaiseMm > 0 && r > 0 ? (r + ceilingRaiseMm) / r : 1;
     const points: { u: number; v: number }[] = [];
     for (let i = 0; i < radialSegments; i += 1) {
       const theta = (i / radialSegments) * Math.PI * 2;
-      points.push({ u: Math.cos(theta) * r, v: Math.sin(theta) * r });
+      const v = Math.sin(theta) * r;
+      points.push({ u: Math.cos(theta) * r, v: v > 0 ? v * stretch : v });
     }
     return points;
   }
@@ -82,10 +105,11 @@ export function profilePoints(
   const halfBottom = crossSection === 'trapezoid' ? (widthMm * TRAPEZOID_DRAFT) / 2 : halfTop;
 
   // CCW: bottom-right → top-right → top-left → bottom-left.
+  const top = halfH + Math.max(0, ceilingRaiseMm);
   return [
     { u: halfBottom, v: -halfH },
-    { u: halfTop, v: halfH },
-    { u: -halfTop, v: halfH },
+    { u: halfTop, v: top },
+    { u: -halfTop, v: top },
     { u: -halfBottom, v: -halfH },
   ];
 }
