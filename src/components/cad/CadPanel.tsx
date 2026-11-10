@@ -8,14 +8,22 @@ import { exportStl } from '../../lib/cad/stlExport';
 import { THREAD_APPROXIMATION_NOTE } from '../../lib/cad/portGeometry';
 import { channelPlaneZ, slidePocket } from '../../lib/cad/slide';
 import { slugify } from '../../lib/slug';
+import { compensateDesign } from '../../lib/dfm/compensate';
+import { planExport } from '../../lib/dfm/exportPlan';
 import { useChipResize } from '../../hooks/useChipResize';
+import { useDfmCompensation } from '../../hooks/useDfmCompensation';
 import { useCadStore } from '../../store/cadStore';
+import { selectedDfmEntry, useDfmStore } from '../../store/dfmStore';
 import { useProjectStore } from '../../store/projectStore';
+import { useValidationStore } from '../../store/validationStore';
 import type { ChipParams } from '../../types/project';
 import { WikiLink } from '../ui/WikiLink';
 import { Button } from '../ui/Button';
 import { Field, NumberInput, Segmented } from '../ui/Field';
 import { Section } from '../draw/InspectorPanel';
+import { DfmCalibrationDialog } from '../dfm/DfmCalibrationDialog';
+import { DfmPreviewToggle, DfmProfileSelect, DfmSummary } from '../dfm/DfmExportControls';
+import { DfmPreviewPanel } from '../dfm/DfmPreviewPanel';
 import type { CadViewportHandle } from './CadViewport';
 
 export function CadPanel({ viewport }: { viewport: RefObject<CadViewportHandle | null> }) {
@@ -25,6 +33,7 @@ export function CadPanel({ viewport }: { viewport: RefObject<CadViewportHandle |
       <ChipParameters />
       <SlideParameters />
       <ExportSection viewport={viewport} />
+      <DfmCalibrationDialog />
     </aside>
   );
 }
@@ -422,19 +431,64 @@ function ExportSection({ viewport }: { viewport: RefObject<CadViewportHandle | n
   const addSavedImage = useProjectStore((s) => s.addSavedImage);
   const buildForExport = useCadStore((s) => s.buildForExport);
   const model = useCadStore((s) => s.model);
+  // Null on "None (uncompensated)", and then nothing below is computed or drawn.
+  const dfm = useDfmCompensation();
+  const dfmPreviewOpen = useDfmStore((s) => s.previewOpen);
 
   const [busy, setBusy] = useState<string | null>(null);
   const [highRes, setHighRes] = useState(true);
 
   const slug = slugify(projectName);
 
+  /**
+   * What this export is built from. With no profile selected it is the project
+   * as it stands, untouched. With one, it is compensated here, from the store's
+   * state at the moment of the click — never from the debounced value the
+   * panel displays.
+   */
+  const plan = () => {
+    const entry = selectedDfmEntry(useDfmStore.getState());
+    const { printerProfile } = useProjectStore.getState().project;
+    const nominal = { graph, chipParams, drainageVents, printerProfile };
+    return planExport(
+      nominal,
+      projectName,
+      entry,
+      entry
+        ? compensateDesign(nominal, entry.profile, {
+            settings: useValidationStore.getState().settings,
+          })
+        : undefined,
+    );
+  };
+
+  /** After a compensated export: what the toast adds, and the note in the project. */
+  const afterCompensated = (planned: ReturnType<typeof plan>): string => {
+    const entry = selectedDfmEntry(useDfmStore.getState());
+    if (!planned.compensated || !entry) return '';
+    useProjectStore
+      .getState()
+      .setDfmProfileRef({ name: entry.profile.meta.name, sha256: entry.sha256 });
+    const count = planned.compensated.conflicts.length;
+    return (
+      ` Print-corrected with “${entry.profile.meta.name}”.` +
+      (count > 0 ? ` ${count} conflict${count === 1 ? '' : 's'} — see the Export panel.` : '')
+    );
+  };
+
   const exportStlFor = async (which: 'all' | 'body' | 'lid') => {
     setBusy(`stl-${which}`);
     try {
+      const planned = plan();
       // Re-run at export quality rather than shipping the coarse preview mesh —
       // the tessellation error in a preview circle is ~2%, which is real
       // material on a 0.4 mm channel.
-      const built = await buildForExport(graph, chipParams, drainageVents);
+      const built = await buildForExport(
+        planned.graph,
+        planned.chipParams,
+        planned.drainageVents,
+        planned.ceilingRaiseMm,
+      );
       const pieces =
         which === 'all' ? built.pieces : built.pieces.filter((p) => p.id === which);
 
@@ -443,13 +497,13 @@ function ExportSection({ viewport }: { viewport: RefObject<CadViewportHandle | n
         return;
       }
 
-      const suffix = which === 'all' ? '' : `-${which}`;
-      const buffer = exportStl(pieces, `OpenChip ${projectName}`);
+      const suffix = `${which === 'all' ? '' : `-${which}`}${planned.fileSuffix}`;
+      const buffer = exportStl(pieces, planned.stlHeader);
       downloadBlob(buffer, `${slug}${suffix}.stl`, 'model/stl');
 
       const tris = pieces.reduce((sum, p) => sum + p.indices.length / 3, 0);
       toast.success(`Exported ${slug}${suffix}.stl`, {
-        description: `${tris.toLocaleString()} triangles, millimetre units.`,
+        description: `${tris.toLocaleString()} triangles, millimetre units.${afterCompensated(planned)}`,
       });
     } catch (error) {
       toast.error("Couldn't build the STL", {
@@ -463,10 +517,16 @@ function ExportSection({ viewport }: { viewport: RefObject<CadViewportHandle | n
   const exportScadFile = () => {
     setBusy('scad');
     try {
-      const source = exportScad(graph, chipParams, { projectName, drainageVents });
-      downloadBlob(source, `${slug}.scad`, 'text/plain');
-      toast.success(`Exported ${slug}.scad`, {
-        description: 'Parameters are at the top of the file, ready to edit.',
+      const planned = plan();
+      const source = exportScad(planned.graph, planned.chipParams, {
+        projectName,
+        drainageVents: planned.drainageVents,
+        ceilingRaiseMm: planned.ceilingRaiseMm,
+        headerNotes: planned.scadNotes,
+      });
+      downloadBlob(source, `${slug}${planned.fileSuffix}.scad`, 'text/plain');
+      toast.success(`Exported ${slug}${planned.fileSuffix}.scad`, {
+        description: `Parameters are at the top of the file, ready to edit.${afterCompensated(planned)}`,
       });
     } finally {
       setBusy(null);
@@ -521,14 +581,25 @@ function ExportSection({ viewport }: { viewport: RefObject<CadViewportHandle | n
             STL to print, OpenSCAD to keep editing.{' '}
             <WikiLink to="exporting">Which format when</WikiLink>
           </p>
-          <Button
-            size="sm"
-            icon={<Download size={14} />}
-            disabled={busy !== null || !model}
-            onClick={() => void exportStlFor('all')}
-          >
-            {busy === 'stl-all' ? 'Building…' : twoPiece ? 'STL — both pieces' : 'STL'}
-          </Button>
+
+          <DfmProfileSelect />
+          {dfm ? <DfmSummary dfm={dfm} /> : null}
+
+          {/* `contents` on None, so the STL button sits in the column exactly
+              as it always has; a two-column row only once there is a toggle
+              to put beside it. */}
+          <div className={dfm ? 'grid grid-cols-[minmax(0,1fr)_auto] gap-1.5' : 'contents'}>
+            <Button
+              size="sm"
+              icon={<Download size={14} />}
+              disabled={busy !== null || !model}
+              className={dfm ? 'whitespace-nowrap px-2' : undefined}
+              onClick={() => void exportStlFor('all')}
+            >
+              {busy === 'stl-all' ? 'Building…' : twoPiece ? 'STL — both pieces' : 'STL'}
+            </Button>
+            {dfm ? <DfmPreviewToggle /> : null}
+          </div>
 
           {twoPiece ? (
             <div className="grid grid-cols-2 gap-2">
@@ -564,6 +635,8 @@ function ExportSection({ viewport }: { viewport: RefObject<CadViewportHandle | n
           rest is the mesh that gets written.
         </p>
       </Section>
+
+      {dfm && dfmPreviewOpen ? <DfmPreviewPanel dfm={dfm} /> : null}
 
       <Section title="Snapshot">
         <label className="flex items-center gap-2 text-[12px] text-ink">

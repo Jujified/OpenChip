@@ -172,6 +172,12 @@ interface ProjectState extends ProjectStateData {
   removeSavedImage: (id: string) => void;
   /** Drainage holes. Replaces the whole list — it is small and edited wholesale. */
   setDrainageVents: (vents: DrainageVent[]) => void;
+  /**
+   * Records which print-correction profile the project was last exported with.
+   * A note in the file, nothing more: it changes no geometry and is not an
+   * undo step. A no-op when the reference is already the same.
+   */
+  setDfmProfileRef: (ref: { name: string; sha256: string }) => void;
 
   // --- fluids --------------------------------------------------------------
   setFluidProfiles: (profiles: FluidProfile[]) => void;
@@ -507,6 +513,12 @@ export const useProjectStore = create<ProjectState>()(
 
         setDrainageVents: (vents) =>
           edit((project) => ({ ...project, drainageVents: vents })),
+
+        setDfmProfileRef: (ref) => {
+          const current = get().project.dfmProfileRef;
+          if (current?.sha256 === ref.sha256 && current.name === ref.name) return;
+          edit((project) => ({ ...project, dfmProfileRef: { ...ref } }));
+        },
 
         setFluidProfiles: (profiles) =>
           edit((project) => ({ ...project, fluidProfiles: profiles })),

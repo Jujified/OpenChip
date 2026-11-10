@@ -28,6 +28,8 @@ export interface CadRequest {
   drainageVents?: DrainageVent[];
   /** Also return the cavity as a solid, for the viewport's isolate mode. */
   includeChannelSolid?: boolean;
+  /** Print-correction ceiling raise, mm. Absent or zero for a nominal build. */
+  ceilingRaiseMm?: number;
 }
 
 export interface CadPiecePayload {
@@ -78,6 +80,7 @@ async function build(request: CadRequest): Promise<void> {
       quality: request.quality,
       drainageVents: request.drainageVents,
       includeChannelSolid: request.includeChannelSolid,
+      ceilingRaiseMm: request.ceilingRaiseMm,
     });
 
     // Sent even if a newer preview has arrived meanwhile: that one is next in

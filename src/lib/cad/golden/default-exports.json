@@ -1,0 +1,442 @@
+{
+  "template:serpentine-mixer": {
+    "all.stl": {
+      "sha256": "9a869ae0dc39474ccffa11e0e944755bb54fd995559a4f45090be8417049f334",
+      "bytes": 486384,
+      "triangles": 9726,
+      "volumeMm3": 9580.258,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        40,
+        60,
+        7.5
+      ]
+    },
+    "body.stl": {
+      "sha256": "b4a07029078d7f476befbcd91bc91fdb45895afa25f5794d15bbbbacab6ab1c3",
+      "bytes": 252284,
+      "triangles": 5044,
+      "volumeMm3": 4706.268,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        40,
+        60,
+        2
+      ]
+    },
+    "lid.stl": {
+      "sha256": "a5207e18d50a64a1b99f8b0910ea718369d8b8e222aab1a14319e5bd681347cf",
+      "bytes": 234184,
+      "triangles": 4682,
+      "volumeMm3": 4873.99,
+      "boundsMm": [
+        0,
+        0,
+        2,
+        40,
+        60,
+        7.5
+      ]
+    },
+    "source.scad": {
+      "sha256": "8fc9bf2deb2bcfd73b1c480d95fb70f922febf0b5978e065f6cd1b5e3e56aab8",
+      "bytes": 34375
+    },
+    "schematic.svg": {
+      "sha256": "c0ce229792ed46d5d0cc1c6cf33e859fe594ea75393fc96519dcebe492a9f020",
+      "bytes": 16433
+    }
+  },
+  "template:t-junction-mixer": {
+    "all.stl": {
+      "sha256": "c43c87c025ee3dbf65e7588b319b1c5f7a2e51b966e1abe649a9635b68c2b5d3",
+      "bytes": 289384,
+      "triangles": 5786,
+      "volumeMm3": 5805.963,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        36,
+        40,
+        7.5
+      ]
+    },
+    "body.stl": {
+      "sha256": "28f7000134723b494dbe1b5b19ec64bafdee849cc4b391eb65000e9c35a6d368",
+      "bytes": 89784,
+      "triangles": 1794,
+      "volumeMm3": 2851.973,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        36,
+        40,
+        2
+      ]
+    },
+    "lid.stl": {
+      "sha256": "939924889686d7854050e85378d6317326f9828551a13ffb14b8dfe0c53f7a87",
+      "bytes": 199684,
+      "triangles": 3992,
+      "volumeMm3": 2953.99,
+      "boundsMm": [
+        0,
+        0,
+        2,
+        36,
+        40,
+        7.5
+      ]
+    },
+    "source.scad": {
+      "sha256": "0ff3a1e3028574a355c1ac56f9886a231804df1c9b505ef3bd046fb1e1db0681",
+      "bytes": 14626
+    },
+    "schematic.svg": {
+      "sha256": "6dc46ecc0d69d3c9bdb87031cafb00d73a5defb35fdedebf52e69f385bfbd1b9",
+      "bytes": 5971
+    }
+  },
+  "template:y-junction-mixer": {
+    "all.stl": {
+      "sha256": "98487488d5f69f7eeea4581da147442ce45bfb20ad2351f2ce28255d7696468f",
+      "bytes": 381534,
+      "triangles": 7629,
+      "volumeMm3": 6383.156,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        36,
+        44,
+        7.5
+      ]
+    },
+    "body.stl": {
+      "sha256": "98418ab40a25d3797b202072c09a3ee4115c2e1c37d726e89ace8a9c58d909b8",
+      "bytes": 146584,
+      "triangles": 2930,
+      "volumeMm3": 3141.166,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        36,
+        44,
+        2
+      ]
+    },
+    "lid.stl": {
+      "sha256": "8420791aef61e9fce7311980227f87a81ea0d867adf70e085ed405137bbe93e7",
+      "bytes": 235034,
+      "triangles": 4699,
+      "volumeMm3": 3241.99,
+      "boundsMm": [
+        0,
+        0,
+        2,
+        36,
+        44,
+        7.5
+      ]
+    },
+    "source.scad": {
+      "sha256": "9fae5b04812a43d59f436c974fa06dff9e5d38bb8f369a1715b001067590815e",
+      "bytes": 12960
+    },
+    "schematic.svg": {
+      "sha256": "6e3b20cbe5684b4e3b1a7c7451ff3ddda4e0c808d85c52c7a5bfd363300d5ca7",
+      "bytes": 7645
+    }
+  },
+  "template:herringbone-mixer": {
+    "all.stl": {
+      "sha256": "94fdc1036348493b09a8bc861480cd5dd3873d8d795e843195edb1e606f236f3",
+      "bytes": 449684,
+      "triangles": 8992,
+      "volumeMm3": 9147.23,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        30,
+        76,
+        7.5
+      ]
+    },
+    "body.stl": {
+      "sha256": "6d1e972f49b836378aad6c74277ce7078d1c76fb3c90d7efa25e81bd04b028c5",
+      "bytes": 178184,
+      "triangles": 3562,
+      "volumeMm3": 4513.24,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        30,
+        76,
+        2
+      ]
+    },
+    "lid.stl": {
+      "sha256": "ba7ef026f74c1742d4dbf75dee758d3b1e860873543aa6b0b091ebfba4990a4c",
+      "bytes": 271584,
+      "triangles": 5430,
+      "volumeMm3": 4633.99,
+      "boundsMm": [
+        0,
+        0,
+        2,
+        30,
+        76,
+        7.5
+      ]
+    },
+    "source.scad": {
+      "sha256": "610fa6d25cb0dfc24649c46c0003fc761d4a0a8a52b1e4e5dd9f83f02e7b275f",
+      "bytes": 30291
+    },
+    "schematic.svg": {
+      "sha256": "66c10b99d3f48a9c1ee4bbaa554ec42c680601af66304d982a4c9a685ab241ba",
+      "bytes": 12435
+    }
+  },
+  "template:spiral-mixer": {
+    "all.stl": {
+      "sha256": "c73467f9ea655e3404584d71cf112913a14c76dd89988c5049b16ea890ce5889",
+      "bytes": 865784,
+      "triangles": 17314,
+      "volumeMm3": 14364.102,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        60,
+        60,
+        7.5
+      ]
+    },
+    "body.stl": {
+      "sha256": "d72327481963da7e5653209e688499a9a2a586ccddd9c08554f86bd4eb40e6d2",
+      "bytes": 468584,
+      "triangles": 9370,
+      "volumeMm3": 7090.112,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        60,
+        60,
+        2
+      ]
+    },
+    "lid.stl": {
+      "sha256": "09f347a69f794fcd571cdfa8151e7824c54211dbd63f85f6dc5628709e085d69",
+      "bytes": 397284,
+      "triangles": 7944,
+      "volumeMm3": 7273.99,
+      "boundsMm": [
+        0,
+        0,
+        2,
+        60,
+        60,
+        7.5
+      ]
+    },
+    "source.scad": {
+      "sha256": "d3d27f6eb38c863a91e3eab02b2dfdaefea69e067479e6bbcc109d2c4f79efc5",
+      "bytes": 53824
+    },
+    "schematic.svg": {
+      "sha256": "142cf0c4fb6a908ba3c688f2025bcc151311b804fab9df2b5fb7fe457594ccca",
+      "bytes": 26431
+    }
+  },
+  "template:gradient-generator": {
+    "all.stl": {
+      "sha256": "30f40657175d60f75c418e4883a46275026209284496af239b60efed79b86582",
+      "bytes": 1024484,
+      "triangles": 20488,
+      "volumeMm3": 16823.089,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        60,
+        70,
+        7.5
+      ]
+    },
+    "body.stl": {
+      "sha256": "c8b997d696c476931c2702311e81650f428957ff28a7f998f2dd642271b9adde",
+      "bytes": 429984,
+      "triangles": 8598,
+      "volumeMm3": 8275.109,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        60,
+        70,
+        2
+      ]
+    },
+    "lid.stl": {
+      "sha256": "4a44329eed16be6cc2e0b7ed0a975a48b27c7219a9a1812af7ce25dd9f2e073d",
+      "bytes": 594584,
+      "triangles": 11890,
+      "volumeMm3": 8547.98,
+      "boundsMm": [
+        0,
+        0,
+        2,
+        60,
+        70,
+        7.5
+      ]
+    },
+    "source.scad": {
+      "sha256": "9332f7ff671f638df782ead12d88e7c8dd63589b260a7353def281aa3b3b1dae",
+      "bytes": 97653
+    },
+    "schematic.svg": {
+      "sha256": "56c058e3d3d543f5451a1ca9889710c3e1c2534593006c3e7783bfdee3b4b2a5",
+      "bytes": 33835
+    }
+  },
+  "template:droplet-generator": {
+    "all.stl": {
+      "sha256": "eb64450a64ee2e7d597dd821c947526d2efa299d65fda608ec29a5222e0858bc",
+      "bytes": 410934,
+      "triangles": 8217,
+      "volumeMm3": 8148.7,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        40,
+        50,
+        9
+      ]
+    },
+    "body.stl": {
+      "sha256": "d46e46d62c8512c7adcb027377a827a6d55c137b72ae7ef31cd0f4ab4b8439e0",
+      "bytes": 115084,
+      "triangles": 2300,
+      "volumeMm3": 3967.474,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        40,
+        50,
+        2
+      ]
+    },
+    "lid.stl": {
+      "sha256": "1039e60bb42ff41615c862992d4db972e86b6bd473216541990a7f70274ba28e",
+      "bytes": 295934,
+      "triangles": 5917,
+      "volumeMm3": 4181.226,
+      "boundsMm": [
+        0,
+        0,
+        2,
+        40,
+        50,
+        9
+      ]
+    },
+    "source.scad": {
+      "sha256": "9d088e94448d69f50816b4cf8c98d4eb9052952b755cfaf7a71ebc3873e03f0b",
+      "bytes": 16048
+    },
+    "schematic.svg": {
+      "sha256": "8ae268cc9b10d6273c5f172e5e5f59fdff366fcf39ddd0b712881a056e3f0715",
+      "bytes": 8568
+    }
+  },
+  "file:examples/counter-flow-exchanger.openchip": {
+    "all.stl": {
+      "sha256": "1759639ba1e969339c8b7e0c676769056797edbccfdd1e212aad0c0ba8b4a988",
+      "bytes": 248784,
+      "triangles": 4974,
+      "volumeMm3": 9616.684,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        40,
+        60,
+        7.5
+      ]
+    },
+    "body.stl": {
+      "sha256": "defa17eaa5a3cc045bc31fb3673636bdc6ef9097d779298ccd8c5d1b0b5882a3",
+      "bytes": 83184,
+      "triangles": 1662,
+      "volumeMm3": 4770.85,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        40,
+        60,
+        2
+      ]
+    },
+    "lid.stl": {
+      "sha256": "a79db1c2b3c67432f1af39cdd2eba165bc5feacfd17a4ad8faa1e707fd98a005",
+      "bytes": 165684,
+      "triangles": 3312,
+      "volumeMm3": 4845.833,
+      "boundsMm": [
+        0,
+        0,
+        2,
+        40,
+        60,
+        7.5
+      ]
+    },
+    "source.scad": {
+      "sha256": "c72ecb10c5c7ec1536c3c0c843355cb38504b51716d01726283fa4164da6f57d",
+      "bytes": 14709
+    },
+    "schematic.svg": {
+      "sha256": "b36f8674cc3eb67d0ac4f14c182e7c26ff69b418047cc75a776220855b782d75",
+      "bytes": 6635
+    }
+  },
+  "file:skills/openchip-design/examples/chamber-mixer.openchip": {
+    "all.stl": {
+      "sha256": "968e2614de7ccc0b83512e179ba288c8f2caa82056b3dc71d6011c06d1c6d92d",
+      "bytes": 442734,
+      "triangles": 8853,
+      "volumeMm3": 14338.121,
+      "boundsMm": [
+        0,
+        0,
+        0,
+        40,
+        60,
+        9.5
+      ]
+    },
+    "source.scad": {
+      "sha256": "7f6c097305f8ceb8417d4d711379e23d1af30de435c392843cf9a7f15274643c",
+      "bytes": 16706
+    },
+    "schematic.svg": {
+      "sha256": "b404b63952fa0974fb01738ff1bc1864d42a36fac6218b0e009461fb817eb7af",
+      "bytes": 7146
+    }
+  }
+}

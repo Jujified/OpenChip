@@ -53,6 +53,14 @@ src/
 │   │   ├── creasedMesh.ts   render-ready meshes with creased normals
 │   │   ├── stlExport.ts     binary STL
 │   │   └── scadExport.ts    editable OpenSCAD source
+│   ├── dfm/
+│   │   ├── profile.ts       the .ocdfm print-correction profile: parse, validate, hash
+│   │   ├── model.ts         the lateral bleed model and its inverse
+│   │   ├── compensate.ts    nominal design + profile → design to print + conflicts
+│   │   ├── exportPlan.ts    what an export is built from and named, with or without a profile
+│   │   ├── coupon.ts        the calibration coupon project and its measurement sheet
+│   │   ├── fit.ts           coupon results → compensation parameters
+│   │   └── preview.ts       outlines and cross-sections for the read-only preview
 │   ├── validation/
 │   │   ├── manufacturability.ts  min feature, clearance, build volume, overhangs
 │   │   ├── flow.ts            dead ends, islands, abrupt tapers
@@ -76,6 +84,7 @@ src/
 │   ├── editorStore.ts   tool, selection, snapping, viewport
 │   ├── cadStore.ts      the built solid and the worker that produces it
 │   ├── validationStore.ts  focused warning and check thresholds
+│   ├── dfmStore.ts      loaded print-correction profiles and the one selected
 │   ├── fluidStore.ts    selected metric and fluid being edited
 │   └── uiStore.ts       overlays and pending confirmations
 ├── components/          shell, onboarding, tour, dialogs, UI primitives, draw/
@@ -154,6 +163,70 @@ along-channel distance to the nearest port, plus every dead end and every island
 with no port at all. `planDrainage` iterates that to convergence, because
 venting the worst spot exposes the next-worst and a "one-click" helper that
 needs three clicks is not one-click.
+
+## How print correction is put together
+
+`lib/dfm/` compensates for resin overcure at export time, from a per-printer,
+per-resin profile. It is optional end to end: with no profile selected nothing
+in it runs, and `goldenExport.test.ts` holds the default export byte-identical
+to a recorded baseline.
+
+**One function, three callers.** `compensateDesign(nominal, profile)` is pure
+and returns a second design plus a conflict list. The STL export, the OpenSCAD
+export and the preview panel all call it and hand the result to the ordinary
+pipeline, so they cannot disagree. `preview.test.ts` goes further and compares
+the preview's cross-sections with a slice of the mesh the export path builds.
+
+**The compensated design is almost entirely ordinary data.** Lateral bleed
+becomes wider dimension markers on a copy of the graph, so the loft, the sweep
+and both exporters need to know nothing about it. Vertical cure-through is the
+one thing the graph cannot express — a ceiling that moves while the floor stays
+— so it travels as a single optional `ceilingRaiseMm`, default 0, through
+`placeChannel`, `profilePoints`, `buildChip` and `exportScad`.
+
+**The design file stays nominal.** Compensation is never written back. A
+`.openchip` file may carry an optional `dfmProfileRef` (the name and SHA-256 of
+the profile it was last exported with) and nothing else; the profile is a
+separate `.ocdfm` file kept in a browser-level store. The selection is not
+persisted, so every session starts on "None (uncompensated)".
+
+**The model is empirical, with a motivated shape.** Jacobs' working curve,
+C_d = D_p·ln(E/E_c), is Beer–Lambert attenuation solved for the depth at which
+dose falls to the cure threshold. Taking stray lateral light to fall off the
+same way, an isolated edge cures a fixed distance Δ past where it was drawn, and
+the two walls of a channel add their tails in the gap: each wall moves further
+as the channel narrows, and the channel closes at W = 2Δ + 2λ·ln 2. Δ and λ are
+fitted to coupon measurements directly; D_p and E_c are not recovered, because
+a coupon printed at one exposure cannot separate them. Vertical cure-through
+depends on dose rather than on channel width, so it is one number.
+
+**What it assumes**, each stated in `compensate.ts`: the chip prints flat, base
+down; the ceiling raise applies only to monolithic chips, since two-piece and
+glass-slide channels are open grooves with no printed roof; bleed is isotropic
+and uniform across the plate; ports and fittings are left nominal, because a
+Luer taper is a fit to a standard part; and a round channel is corrected as a
+larger circle, which also lowers its floor by the lateral offset.
+
+**Conflicts are found with the design checks themselves.** The channel-spacing
+check runs on the nominal and the compensated design, and a conflict is a
+failing measurement that compensation created or made worse — a wall that was
+already too thin as drawn is the design's own warning. Edge clearance and roof
+thickness are measured the same before-and-after way. Like every other check,
+a conflict is a caution box with numbers in it and is connected to no button.
+
+**An open/closed fit is a bracket, not a number.** Marking channels open or
+closed only says which side of a threshold each fell on, so `fit.ts` reports
+the interval between the largest size that closed and the smallest that stayed
+open, uses the constant model, and the dialog calls the result coarse. Measured
+dimensions give a least-squares fit with a residual, and the decay length is
+kept only when it cuts the squared error by more than a tenth.
+
+**The coupon is an ordinary project.** It is built from nodes, segments and
+drainage vents and exported through the same pipeline, so it measures the app's
+real output. Its channels deliberately run through the side walls to open both
+ends, which the design checks report as channels outside the chip. There is no
+text primitive, so groups are labelled with tally dots: blind holes made from
+drainage vents on nodes that carry no channel.
 
 ## How the fluid estimates are put together
 
@@ -312,6 +385,12 @@ Project files are parsed with loose object schemas, so a file written by a later
 version opens in an earlier build with its unknown fields preserved through a save
 round-trip. `formatVersion` gates migrations; the hook lives in
 `migrate()` in `lib/projectFile.ts`.
+
+Print-correction profiles are the deliberate exception. A `.ocdfm` file with a
+`schemaVersion` newer than the build understands is refused with a message
+rather than opened: its unknown fields would be terms of a model this build
+does not apply, and exporting with half a correction is worse than exporting
+with none.
 
 ## Deploying
 

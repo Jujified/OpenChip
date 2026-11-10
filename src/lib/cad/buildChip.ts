@@ -23,7 +23,7 @@ import type {
   DrainageVent,
   PortNode,
 } from '../../types/project';
-import { placeChannel, profilePoints, radialSegmentsFor } from './placement';
+import { ceilingZ, placeChannel, profilePoints, radialSegmentsFor } from './placement';
 import { slidePocket, withChannelPlane } from './slide';
 import { buildPort, coneMesh, filletedBossMesh } from './portGeometry';
 import { planarFrame, sweepStations, type RawMesh, type SweepStation } from './sweep';
@@ -88,6 +88,12 @@ export interface BuildOptions {
    * an STL.
    */
   includeChannelSolid?: boolean;
+  /**
+   * Lifts every channel, joint and chamber ceiling by this much, mm, leaving
+   * floors where they were drawn. Print correction for cure-through into a
+   * roofed channel; see `lib/dfm`. Zero — the default — is the nominal build.
+   */
+  ceilingRaiseMm?: number;
 }
 
 export interface ChipPiece {
@@ -161,8 +167,18 @@ function buildChannelNetwork(
   loft: LoftSolution,
   adjacency: Map<string, ChannelEdge[]>,
   own: Own,
+  ceilingRaiseMm = 0,
 ): { solid: ManifoldLike | null; volume: number } {
   const parts: ManifoldLike[] = [];
+  // A joint or a chamber is a primitive, with no profile to stretch. Unioning
+  // a second copy lifted by the raise extends its top by exactly that much —
+  // exactly for a cylinder, as a capsule for a sphere — and leaves its floor
+  // alone. Nothing is added when there is no raise, so a nominal build is the
+  // same list of solids it always was.
+  const place3 = (solid: ManifoldLike, x: number, y: number, z: number) => {
+    parts.push(own(solid.translate([x, y, z])));
+    if (ceilingRaiseMm > 0) parts.push(own(solid.translate([x, y, z + ceilingRaiseMm])));
+  };
 
   for (const edge of graph.edges) {
     const solved = loft.edges.get(edge.id);
@@ -181,7 +197,13 @@ function buildChannelNetwork(
         center: { x: sample.point.x, y: sample.point.y, z: place.centerZ },
         across: frame.across,
         up: frame.up,
-        profile: profilePoints(edge.crossSection, sample.widthMm, sample.heightMm, segments),
+        profile: profilePoints(
+          edge.crossSection,
+          sample.widthMm,
+          sample.heightMm,
+          segments,
+          ceilingRaiseMm,
+        ),
       };
     });
 
@@ -220,7 +242,7 @@ function buildChannelNetwork(
           ),
     );
 
-    parts.push(own(joint.translate([node.x, node.y, place.centerZ])));
+    place3(joint, node.x, node.y, place.centerZ);
   }
 
   // Chambers.
@@ -247,7 +269,7 @@ function buildChannelNetwork(
         : api.Manifold.cylinder(node.sizeMm, node.sizeMm / 2, node.sizeMm / 2, segments, true),
     );
 
-    parts.push(own(chamber.translate([node.x, node.y, place.centerZ])));
+    place3(chamber, node.x, node.y, place.centerZ);
   }
 
   if (parts.length === 0) return { solid: null, volume: 0 };
@@ -265,6 +287,7 @@ function channelAtNode(
   chipParams: ChipParams,
   nodeId: string,
   loft: LoftSolution,
+  ceilingRaiseMm = 0,
 ): { centerZ: number; topZ: number } {
   const touching = edgesFrom(adjacency, nodeId);
   const edge = touching[0];
@@ -277,8 +300,9 @@ function channelAtNode(
     sample?.widthMm ?? chipParams.defaultChannelWidthMm,
     sample?.heightMm ?? chipParams.defaultChannelHeightMm,
     chipParams.splitHeight,
+    ceilingRaiseMm,
   );
-  return { centerZ: place.centerZ, topZ: place.centerZ + place.halfHeight };
+  return { centerZ: place.centerZ, topZ: ceilingZ(place) };
 }
 
 const channelZAtNode = (
@@ -324,6 +348,7 @@ function buildChipOwned(
   const quality = options.quality ?? 1;
   const vents = options.drainageVents ?? [];
   const includeChannelSolid = options.includeChannelSolid ?? false;
+  const ceilingRaiseMm = Math.max(0, options.ceilingRaiseMm ?? 0);
   const warnings: string[] = [];
   // Ports and chambers are the largest curved features on the chip and there
   // are only a handful of them, so they carry a finer ring than the channels:
@@ -341,7 +366,16 @@ function buildChipOwned(
   const adjacency = buildAdjacency(graph.edges);
 
   // --- 1-2. channel network + chambers -------------------------------------
-  const network = buildChannelNetwork(api, graph, placed, quality, loft, adjacency, own);
+  const network = buildChannelNetwork(
+    api,
+    graph,
+    placed,
+    quality,
+    loft,
+    adjacency,
+    own,
+    ceilingRaiseMm,
+  );
   const cavityParts: ManifoldLike[] = network.solid ? [network.solid] : [];
 
   // --- 3. ports -------------------------------------------------------------
@@ -354,7 +388,7 @@ function buildChipOwned(
     if (node.type !== 'port') continue;
     portCount += 1;
 
-    const channel = channelAtNode(adjacency, placed, node.id, loft);
+    const channel = channelAtNode(adjacency, placed, node.id, loft, ceilingRaiseMm);
     const port = buildPort(node as PortNode, topZ, channel.centerZ, segments, channel.topZ);
     usedThreadApproximation ||= port.approximated;
 
