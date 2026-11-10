@@ -78,6 +78,8 @@ export const CONTEXT_LINKS = {
   fileFormat: '/reference/file-format/',
   /** The dimension tool. */
   dimensionMarkers: '/guide/dimension-markers/',
+  /** The print-correction selector, the preview panel and the calibration dialog. */
+  printCorrection: '/printing/print-correction/',
 } as const;
 
 export type ContextLink = keyof typeof CONTEXT_LINKS;
