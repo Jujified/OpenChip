@@ -29,6 +29,11 @@
  *    seal. Channels, corner joints, chambers and drainage vents are corrected.
  * 5. The same coupon-derived lateral offset is used for open grooves as for
  *    enclosed channels, although the coupon measures enclosed ones.
+ * 6. Cross-sections keep their kind. A round channel is corrected as a larger
+ *    circle, which also lowers its lowest point by the lateral offset; a
+ *    trapezoid is widened at the top and keeps its draft ratio, so its floor
+ *    widens by 0.7 of what the top does. Both err towards a slightly larger
+ *    channel.
  */
 
 import {
