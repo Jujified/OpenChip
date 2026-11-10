@@ -32,7 +32,8 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join } from 'node:path';
 import { beforeAll, describe, it } from 'vitest';
 import Module from 'manifold-3d';
-import { DEFAULT_CHIP_PARAMS } from '../defaults';
+import { DEFAULT_CHIP_PARAMS, FALLBACK_PRINTER_PROFILE } from '../defaults';
+import { planExport } from '../dfm/exportPlan';
 import { CHIP_PRESETS, presetBuild } from '../presets';
 import { parseProject } from '../projectFile';
 import { exportSchematicSvg } from '../svgExport';
@@ -144,12 +145,30 @@ function stlEntry(pieces: ChipPiece[], header: string): GoldenFile {
 }
 
 function exportAll(design: Design): GoldenDesign {
-  const built = buildChip(api, design.graph, design.chipParams, {
+  // Through `planExport` with no profile, as the CAD panel does it, so the
+  // baseline covers the path a user who never touches print correction takes
+  // rather than a shortcut around it.
+  const plan = planExport(
+    {
+      graph: design.graph,
+      chipParams: design.chipParams,
+      drainageVents: design.drainageVents,
+      printerProfile: FALLBACK_PRINTER_PROFILE,
+    },
+    design.name,
+    null,
+  );
+  assert.equal(plan.graph, design.graph);
+  assert.equal(plan.chipParams, design.chipParams);
+  assert.equal(plan.fileSuffix, '');
+
+  const built = buildChip(api, plan.graph, plan.chipParams, {
     quality: EXPORT_QUALITY,
-    drainageVents: design.drainageVents,
+    drainageVents: plan.drainageVents,
     includeChannelSolid: false,
+    ceilingRaiseMm: plan.ceilingRaiseMm,
   });
-  const header = `OpenChip ${design.name}`;
+  const header = plan.stlHeader;
 
   const files: GoldenDesign = { 'all.stl': stlEntry(built.pieces, header) };
   // The per-piece buttons a two-piece chip offers.
@@ -158,9 +177,11 @@ function exportAll(design: Design): GoldenDesign {
     if (piece.length > 0) files[`${id}.stl`] = stlEntry(piece, header);
   }
 
-  const scad = exportScad(design.graph, design.chipParams, {
+  const scad = exportScad(plan.graph, plan.chipParams, {
     projectName: design.name,
-    drainageVents: design.drainageVents,
+    drainageVents: plan.drainageVents,
+    ceilingRaiseMm: plan.ceilingRaiseMm,
+    headerNotes: plan.scadNotes,
   });
   files['source.scad'] = { sha256: sha256(scad), bytes: Buffer.byteLength(scad) };
 

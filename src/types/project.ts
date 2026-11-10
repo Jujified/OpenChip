@@ -330,6 +330,14 @@ export interface OpenChipProject {
   drainageVents: DrainageVent[];
   /** Id of the starter template this project began from, if any. */
   presetLibraryRef: string | null;
+  /**
+   * The print-correction profile this project was last exported with: its name
+   * and the SHA-256 of its contents. A convenience only — the profile itself
+   * lives in its own `.ocdfm` file and is never embedded here, the channel
+   * graph above is always the nominal design, and a project opens and exports
+   * normally when the profile it names is nowhere to be found.
+   */
+  dfmProfileRef?: { name: string; sha256: string };
 }
 
 // ---------------------------------------------------------------------------

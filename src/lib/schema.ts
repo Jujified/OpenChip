@@ -219,6 +219,15 @@ export const projectSchema = z.looseObject({
   // Added later; files written before it must still open.
   drainageVents: z.array(drainageVentSchema).default([]),
   presetLibraryRef: z.string().nullable().default(null),
+  // Optional and never defaulted: a file that has not been exported with a
+  // print-correction profile carries no trace of the feature, so it saves back
+  // exactly as it was.
+  dfmProfileRef: z
+    .looseObject({
+      name: z.string({ error: 'profile name must be text' }),
+      sha256: z.string({ error: 'profile hash must be text' }),
+    })
+    .optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -269,6 +278,7 @@ const SECTION_LABELS: Record<string, string> = {
   channelGraph: 'Channel network',
   fluidProfiles: 'Fluid profiles',
   savedImages: 'Saved images',
+  dfmProfileRef: 'Print-correction reference',
   formatVersion: 'File header',
 };
 

@@ -87,6 +87,8 @@ interface CadState {
     graph: ChannelGraph,
     chipParams: ChipParams,
     drainageVents?: DrainageVent[],
+    /** Print-correction ceiling raise, mm. Zero for a nominal export. */
+    ceilingRaiseMm?: number,
   ) => Promise<CadModel>;
   dispose: () => void;
 }
@@ -200,7 +202,7 @@ export const useCadStore = create<CadState>()((set) => ({
     w.postMessage(request);
   },
 
-  buildForExport: (graph, chipParams, drainageVents = []) =>
+  buildForExport: (graph, chipParams, drainageVents = [], ceilingRaiseMm = 0) =>
     new Promise<CadModel>((resolve, reject) => {
       const w = ensureWorker(set);
       seq += 1;
@@ -218,6 +220,7 @@ export const useCadStore = create<CadState>()((set) => ({
         quality: 2,
         drainageVents,
         includeChannelSolid: false,
+        ceilingRaiseMm,
       };
       w.postMessage(request);
 
