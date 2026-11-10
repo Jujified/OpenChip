@@ -2,6 +2,7 @@ import { AlertTriangle, Check, ChevronDown, Download, Eye, FlaskConical, Trash2,
 import { useRef } from 'react';
 import { toast } from 'sonner';
 import type { DfmCompensation } from '../../hooks/useDfmCompensation';
+import { cn } from '../../lib/cn';
 import { downloadBlob } from '../../lib/download';
 import {
   DFM_PROFILE_EXTENSION,
@@ -226,7 +227,10 @@ export function DfmPreviewToggle() {
       icon={<Eye size={14} />}
       aria-pressed={previewOpen}
       title="Show the compensated geometry over the design as drawn"
-      className={previewOpen ? 'border-accent bg-accent-wash text-accent hover:bg-accent-wash' : undefined}
+      className={cn(
+        'whitespace-nowrap px-2 text-[12px]',
+        previewOpen && 'border-accent bg-accent-wash text-accent hover:bg-accent-wash',
+      )}
       onClick={() => setPreviewOpen(!previewOpen)}
     >
       Preview DFM

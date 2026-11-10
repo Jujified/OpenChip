@@ -402,6 +402,9 @@ function ceilingConflicts(nominal: NominalDesign, ceilingRaiseMm: number): DfmCo
   const loft = getLoft(nominal.graph, chipParams);
   const limit = chipParams.wallThickness;
 
+  // The thinnest roof among the segments compensation leaves too thin. A
+  // segment that already broke through the top face as drawn is skipped: that
+  // is the design's own problem, which the raise neither caused nor can worsen.
   let worstNominal = Infinity;
   let where: Point2 | undefined;
   const edgeIds: string[] = [];
@@ -411,20 +414,26 @@ function ceilingConflicts(nominal: NominalDesign, ceilingRaiseMm: number): DfmCo
     if (!solved) continue;
 
     let edgeWorst = Infinity;
+    let edgeWhere: Point2 | undefined;
     for (const sample of solved.samples) {
-      // The roof height does not depend on the lateral correction, so the
-      // nominal loft gives the right answer for both designs.
+      // The roof height does not depend on the lateral correction for a
+      // rectangular or trapezoidal channel, so the nominal loft serves both.
       const roof = ceilingZ(
         placeChannel(edge.crossSection, sample.widthMm, sample.heightMm, chipParams.splitHeight),
       );
       const skin = chipParams.baseThickness - roof;
-      if (skin < edgeWorst) edgeWorst = skin;
-      if (skin < worstNominal) {
-        worstNominal = skin;
-        where = sample.point;
+      if (skin < edgeWorst) {
+        edgeWorst = skin;
+        edgeWhere = sample.point;
       }
     }
-    if (edgeWorst - ceilingRaiseMm < limit) edgeIds.push(edge.id);
+    if (edgeWorst <= 0 || edgeWorst - ceilingRaiseMm >= limit) continue;
+
+    edgeIds.push(edge.id);
+    if (edgeWorst < worstNominal) {
+      worstNominal = edgeWorst;
+      where = edgeWhere;
+    }
   }
 
   if (edgeIds.length === 0) return [];

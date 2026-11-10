@@ -588,11 +588,12 @@ function ExportSection({ viewport }: { viewport: RefObject<CadViewportHandle | n
           {/* `contents` on None, so the STL button sits in the column exactly
               as it always has; a two-column row only once there is a toggle
               to put beside it. */}
-          <div className={dfm ? 'grid grid-cols-[1fr_auto] gap-2' : 'contents'}>
+          <div className={dfm ? 'grid grid-cols-[minmax(0,1fr)_auto] gap-1.5' : 'contents'}>
             <Button
               size="sm"
               icon={<Download size={14} />}
               disabled={busy !== null || !model}
+              className={dfm ? 'whitespace-nowrap px-2' : undefined}
               onClick={() => void exportStlFor('all')}
             >
               {busy === 'stl-all' ? 'Building…' : twoPiece ? 'STL — both pieces' : 'STL'}

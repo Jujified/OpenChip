@@ -371,12 +371,32 @@ const NEXT_RESULT: Record<string, ChannelResult | null> = {
  * Each state has its own glyph, word and border style as well as its colour,
  * so the grid reads without colour vision and in either theme.
  */
-const RESULT_STYLE: Record<ChannelResult | 'none', { glyph: string; word: string; className: string }> = {
-  none: { glyph: '·', word: 'not set', className: 'border-dashed border-line text-ink-quiet' },
-  open: { glyph: '○', word: 'open', className: 'border-success bg-panel text-ink' },
-  partial: { glyph: '◐', word: 'partial', className: 'border-dashed border-caution bg-caution-wash text-ink' },
-  closed: { glyph: '●', word: 'closed', className: 'border-danger bg-danger-wash text-ink' },
+const RESULT_STYLE: Record<ChannelResult | 'none', { word: string; className: string }> = {
+  none: { word: 'not set', className: 'border-dashed border-line text-ink-quiet' },
+  open: { word: 'open', className: 'border-success bg-panel text-ink' },
+  partial: { word: 'partial', className: 'border-dashed border-caution bg-caution-wash text-ink' },
+  closed: { word: 'closed', className: 'border-danger bg-danger-wash text-ink' },
 };
+
+/**
+ * The state as a drawn mark — an empty ring, a half-filled one, a filled one —
+ * rather than a Unicode glyph, which not every system font carries.
+ */
+function ResultMark({ result, size = 13 }: { result: ChannelResult | 'none'; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" aria-hidden className="inline-block shrink-0 align-[-2px]">
+      {result === 'none' ? (
+        <circle cx="7" cy="7" r="1.5" fill="currentColor" />
+      ) : (
+        <>
+          {result === 'closed' ? <circle cx="7" cy="7" r="5.5" fill="currentColor" /> : null}
+          {result === 'partial' ? <path d="M7 1.5A5.5 5.5 0 0 0 7 12.5Z" fill="currentColor" /> : null}
+          <circle cx="7" cy="7" r="5.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        </>
+      )}
+    </svg>
+  );
+}
 
 function ResultsStep({
   measurements,
@@ -464,7 +484,7 @@ function ResultsStep({
                       style.className,
                     )}
                   >
-                    <span className="text-[15px] leading-none">{style.glyph}</span>
+                    <ResultMark result={m.result ?? 'none'} size={15} />
                     <span className="mt-0.5 font-mono text-[10px] leading-none">{mm(m.nominalWidthMm)}</span>
                     <span className="mt-0.5 text-[9px] leading-none text-ink-muted">{style.word}</span>
                   </button>
@@ -545,7 +565,7 @@ function Glyph({ result }: { result: ChannelResult }) {
   const style = RESULT_STYLE[result];
   return (
     <span className="whitespace-nowrap font-medium">
-      <span aria-hidden>{style.glyph}</span> {style.word}
+      <ResultMark result={result} /> {style.word}
     </span>
   );
 }
@@ -567,12 +587,14 @@ function MeasuredRow({
         label={`Measured width of channel ${measurement.id}`}
         value={measurement.measuredWidthMm}
         unit="mm"
+        compact
         onChange={(measuredWidthMm) => onChange({ measuredWidthMm })}
       />
       <OptionalNumber
         label={`Measured height of channel ${measurement.id}`}
         value={measurement.measuredHeightMm}
         unit="mm"
+        compact
         onChange={(measuredHeightMm) => onChange({ measuredHeightMm })}
       />
     </>
@@ -586,7 +608,10 @@ function OptionalNumber({
   unit,
   label,
   id,
+  compact,
 }: {
+  /** The denser size used inside the measured-dimensions table. */
+  compact?: boolean;
   value: number | undefined | null;
   onChange: (value: number | undefined) => void;
   unit?: string;
@@ -614,7 +639,7 @@ function OptionalNumber({
           if (Number.isFinite(parsed) && parsed >= 0) onChange(parsed);
         }}
         onBlur={() => setDraft(null)}
-        className={cn('h-8 font-mono text-[12px]', unit ? 'pr-9' : undefined)}
+        className={cn('font-mono', compact ? 'h-8 text-[12px]' : undefined, unit ? 'pr-9' : undefined)}
       />
       {unit ? (
         <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] text-ink-quiet">

@@ -209,7 +209,7 @@ function PreviewBody({
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-2">
         <p className="text-[11px] font-medium text-ink-muted">
-          Cross-section at {axis} = <span className="font-mono text-ink">{mm(position, 2)} mm</span>
+          Slice at {axis} = <span className="font-mono text-ink">{mm(position, 2)} mm</span>
         </p>
         <Segmented
           value={axis}
@@ -230,8 +230,8 @@ function PreviewBody({
         chipTopZ={model.chip.baseThickness}
       />
       <p className="text-[11px] leading-relaxed text-ink-muted">
-        Drag the slice line in the top view. The ceiling correction only shows here: it is
-        invisible from above. <WikiLink to="printCorrection">How to read this</WikiLink>
+        Drag the slice line in the top view, or click to place it. The ceiling correction only
+        shows here: it is invisible from above. <WikiLink to="printCorrection">How to read this</WikiLink>
       </p>
     </div>
   );
@@ -386,7 +386,8 @@ function useElementSize<T extends HTMLElement>() {
 }
 
 const PADDING_PX = 14;
-const MAX_ZOOM = 400;
+/** 0.05 mm of bleed is a few pixels at this zoom on a 40 mm chip; more is only empty canvas. */
+const MAX_ZOOM = 120;
 
 function TopView({
   model,
@@ -493,8 +494,18 @@ function TopView({
     }));
   };
 
-  const endDrag = () => {
+  const endDrag = (event: ReactPointerEvent<SVGSVGElement>) => {
+    const active = drag.current;
     drag.current = null;
+    // A click that did not turn into a pan drops the slice line there. Once
+    // zoomed in, the line is usually off-screen and cannot be dragged back.
+    if (
+      active?.kind === 'pan' &&
+      event.type === 'pointerup' &&
+      Math.hypot(event.clientX - active.x, event.clientY - active.y) < 4
+    ) {
+      moveSlice(event);
+    }
   };
 
   const polygon = (points: { x: number; y: number }[]) =>
@@ -743,8 +754,8 @@ function TopView({
       </div>
 
       {view.zoom === 1 ? (
-        <p className="pointer-events-none absolute left-2 top-1.5 text-[10px] text-ink-quiet">
-          Scroll to zoom · drag to pan
+        <p className="pointer-events-none absolute bottom-2 left-2 text-[10px] text-ink-quiet">
+          Scroll to zoom
         </p>
       ) : null}
     </div>

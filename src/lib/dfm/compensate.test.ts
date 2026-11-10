@@ -325,6 +325,18 @@ describe('conflicts', () => {
     assert.match(out.conflicts[0].message, /breaks through the top face/);
   });
 
+  it('does not report a roof that was already broken through as drawn', () => {
+    // A 1.2 mm round channel centred 0.4 mm under the top face pokes through
+    // it before any correction. That is the design's own warning.
+    const graph = single([{ t: 0, widthMm: 1.2 }]);
+    graph.edges[0].crossSection = 'round';
+    const out = compensateDesign(
+      design(graph, { splitType: 'monolithic', splitHeight: 3.6, wallThickness: 0.3 }),
+      makeProfile({ deltaXyMm: 0, deltaZMm: 0.1 }),
+    );
+    assert.deepEqual(out.conflicts, []);
+  });
+
   it('still returns the compensated design when there are conflicts', () => {
     const out = compensateDesign(design(parallelChannels(1.3), chip), makeProfile({ deltaXyMm: 0.3 }));
     assert.ok(out.conflicts.length > 0);
