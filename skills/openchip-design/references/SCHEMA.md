@@ -192,3 +192,15 @@ enclosed — see `DESIGN-RULES.md`.
 Leave `savedImages` as `[]`; it holds exported SVG/PNG data URIs the app writes
 itself. `presetLibraryRef` is the id of the starter template a project began
 from, or `null` — provenance only, nothing enforces it.
+
+## `dfmProfileRef` (optional)
+
+```json
+"dfmProfileRef": { "name": "Mars 4 — clear — 2.5 s", "sha256": "…64 hex characters…" }
+```
+
+A note of which print-correction profile the project was last exported with.
+The app writes it after a compensated export; **leave it out of a file you
+generate**. It carries no geometry: the profile lives in its own `.ocdfm` file,
+`channelGraph` is always the design as drawn, and a project opens and exports
+normally when the profile it names is not available.

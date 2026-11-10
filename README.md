@@ -29,6 +29,13 @@ browser with no account and no install, and nothing you draw is uploaded.
   channel plate and a lid), one sealed block, or an open plate capped with a
   glass slide. Export STL for printing, editable OpenSCAD source, SVG
   schematics, PNG snapshots and a presentation bundle.
+- **Correct for your printer's overcure, if you want to.** Resin printers cure
+  a little past where they are told to, which narrows small channels and lowers
+  their ceilings. Print a calibration coupon, record which channels came out
+  open, and OpenChip fits a print-correction profile (a `.ocdfm` file) that
+  enlarges channels at export so they print at the size you drew. It is off by
+  default, the design file always keeps the nominal geometry, and exporting
+  without a profile works exactly as before.
 - **Estimate the flow.** A one-dimensional network model gives pressure drop,
   Reynolds number, wall shear, residence time, heat exchange between
   neighbouring channels, and reagent use, with heatmaps.
@@ -47,6 +54,7 @@ Good places to start:
 - [Templates](https://wiki.openchip.tech/guide/templates/)
 - [Design checks](https://wiki.openchip.tech/reference/design-checks/)
 - [Export formats](https://wiki.openchip.tech/reference/export-formats/)
+- [Print correction](https://wiki.openchip.tech/printing/print-correction/)
 - [3D printing microfluidic chips](https://wiki.openchip.tech/printing/3d-printing-microfluidic-chips/)
 
 ## First steps
@@ -58,6 +66,27 @@ take the guided tour from **Settings → Take the tour**.
 
 Your working design is kept in browser storage as a safety net. To keep a design
 or move it between machines, save it as a `.openchip` file.
+
+## Print correction
+
+Optional. If small channels come off your printer narrower than drawn, or
+closed:
+
+1. On the **CAD Preview** tab, open **Print correction** in the Export section
+   and choose **Calibrate a printer…**. Download the coupon, export its STL and
+   print it flat in the resin and exposure settings you use.
+2. Flush it, then mark each channel open, partial or closed. Measured widths and
+   heights are optional and give a much better fit.
+3. Save the profile. It is selected for export straight away, and **Preview
+   DFM** shows the corrected geometry over the design as drawn, with
+   cross-sections.
+
+Corrected files are named `…-dfm-<profile>.stl` and record the profile in the
+file. Choose **None (uncompensated)** to export the design as drawn. An
+open/closed-only fit is coarse and the app says so; print a test piece before
+trusting it. The
+[print correction guide](https://wiki.openchip.tech/printing/print-correction/)
+covers the file format, the model and its limits.
 
 ## Run it locally
 
